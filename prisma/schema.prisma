@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // or mysql/sqlite depending on your setup
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  password    String
+  role        UserRole
+  exams       Exam[]        @relation("CreatedExams")
+  submissions Submission[]
+  enrollments ExamEnrollment[]
+  results     ExamResult[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+enum UserRole {
+  TEACHER
+  STUDENT
+}
+
+model Exam {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  timeLimit   Int           // in minutes
+  creatorId   String
+  creator     User          @relation("CreatedExams", fields: [creatorId], references: [id])
+  problems    ExamProblem[]
+  enrollments ExamEnrollment[]
+  submissions Submission[]
+  results     ExamResult[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ProblemLibrary {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  sampleInput String?
+  sampleOutput String?
+  difficulty  Difficulty
+  tags        String[]
+  testCases   TestCase[]
+  submissions Submission[]
+  examProblems ExamProblem[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model TestCase {
+  id               String         @id @default(uuid())
+  problemLibraryId String
+  problemLibrary   ProblemLibrary @relation(fields: [problemLibraryId], references: [id])
+  input            String
+  output           String
+  isHidden         Boolean        @default(false)
+}
+
+model ExamProblem {
+  id              String         @id @default(uuid())
+  examId          String
+  exam            Exam           @relation(fields: [examId], references: [id])
+  problemLibraryId String
+  problemLibrary  ProblemLibrary @relation(fields: [problemLibraryId], references: [id])
+  order           Int
+  createdAt       DateTime       @default(now())
+}
+
+model Submission {
+  id               String         @id @default(uuid())
+  problemLibraryId String
+  problemLibrary   ProblemLibrary @relation(fields: [problemLibraryId], references: [id])
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  examId           String?        // Nullable for practice submissions
+  exam             Exam?          @relation(fields: [examId], references: [id])
+  code             String
+  language         String
+  result           String
+  score            Int?
+  errorMsg         String?
+  submittedAt      DateTime       @default(now())
+}
+
+model ExamEnrollment {
+  id        String   @id @default(uuid())
+  examId    String
+  exam      Exam     @relation(fields: [examId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+}
+
+model ExamResult {
+  id          String   @id @default(uuid())
+  examId      String
+  exam        Exam     @relation(fields: [examId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  totalScore  Int
+  lastUpdated DateTime @updatedAt
+}
