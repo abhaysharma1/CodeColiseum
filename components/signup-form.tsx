@@ -115,7 +115,7 @@ export function SignupForm({
                       fill="currentColor"
                     />
                   </svg>
-                  Login with GitHub
+                  Signup with GitHub
                 </Button>
               </div>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -134,7 +134,7 @@ export function SignupForm({
                           role === "Select Role" ? "text-white/60" : ""
                         }
                       >
-                        {role}
+                        {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-[45%]">

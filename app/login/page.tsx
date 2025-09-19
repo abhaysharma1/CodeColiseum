@@ -3,17 +3,10 @@
 import { GalleryVerticalEnd } from "lucide-react";
 
 import { LoginForm } from "@/components/login-form";
-import { useEffect } from "react";
 
 import { toast } from "sonner";
 
 export default function LoginPage() {
-
-
-
-  useEffect(() => {
-    toast("Event has been created.");
-  });
 
 
   return (
@@ -36,9 +29,9 @@ export default function LoginPage() {
         </div>
         <div className="bg-muted relative hidden lg:block">
           <img
-            src="/placeholder.svg"
+            src="/images/Facebook-Movie-Hacking-Scene-Upscaled.jpg"
             alt="Image"
-            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6] dark:grayscale"
           />
         </div>
       </div>
