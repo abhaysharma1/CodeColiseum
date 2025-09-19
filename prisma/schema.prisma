@@ -1,24 +1,34 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" // or mysql/sqlite depending on your setup
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  // use direct Postgres connection for migrations
 }
 
 model User {
-  id          String        @id @default(uuid())
-  name        String
-  email       String        @unique
-  password    String
-  role        UserRole
-  exams       Exam[]        @relation("CreatedExams")
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  role          String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  exams       Exam[]           @relation("CreatedExams")
   submissions Submission[]
   enrollments ExamEnrollment[]
   results     ExamResult[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  sessions    Session[]
+  accounts    Account[]
+
+  @@map("user")
 }
 
 enum UserRole {
@@ -27,91 +37,128 @@ enum UserRole {
 }
 
 model Exam {
-  id          String        @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String?
-  timeLimit   Int           // in minutes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  creator     User             @relation("CreatedExams", fields: [creatorId], references: [id])
   creatorId   String
-  creator     User          @relation("CreatedExams", fields: [creatorId], references: [id])
   problems    ExamProblem[]
   enrollments ExamEnrollment[]
   submissions Submission[]
   results     ExamResult[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-}
-
-model ProblemLibrary {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  sampleInput String?
-  sampleOutput String?
-  difficulty  Difficulty
-  tags        String[]
-  testCases   TestCase[]
-  submissions Submission[]
-  examProblems ExamProblem[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-}
-
-model TestCase {
-  id               String         @id @default(uuid())
-  problemLibraryId String
-  problemLibrary   ProblemLibrary @relation(fields: [problemLibraryId], references: [id])
-  input            String
-  output           String
-  isHidden         Boolean        @default(false)
 }
 
 model ExamProblem {
-  id              String         @id @default(uuid())
-  examId          String
-  exam            Exam           @relation(fields: [examId], references: [id])
-  problemLibraryId String
-  problemLibrary  ProblemLibrary @relation(fields: [problemLibraryId], references: [id])
-  order           Int
-  createdAt       DateTime       @default(now())
+  id        String  @id @default(uuid())
+  order     Int
+  exam      Exam    @relation(fields: [examId], references: [id])
+  examId    String
+  problem   Problem @relation(fields: [problemId], references: [id])
+  problemId String
+}
+
+model Problem {
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  difficulty   String
+  testCases    TestCase[]
+  examProblems ExamProblem[]
+}
+
+model TestCase {
+  id        String  @id @default(uuid())
+  input     String
+  output    String
+  problem   Problem @relation(fields: [problemId], references: [id])
+  problemId String
 }
 
 model Submission {
-  id               String         @id @default(uuid())
-  problemLibraryId String
-  problemLibrary   ProblemLibrary @relation(fields: [problemLibraryId], references: [id])
-  userId           String
-  user             User           @relation(fields: [userId], references: [id])
-  examId           String?        // Nullable for practice submissions
-  exam             Exam?          @relation(fields: [examId], references: [id])
-  code             String
-  language         String
-  result           String
-  score            Int?
-  errorMsg         String?
-  submittedAt      DateTime       @default(now())
+  id        String   @id @default(uuid())
+  code      String
+  language  String
+  createdAt DateTime @default(now())
+
+  // Relations
+  exam   Exam   @relation(fields: [examId], references: [id])
+  examId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model ExamEnrollment {
   id        String   @id @default(uuid())
-  examId    String
-  exam      Exam     @relation(fields: [examId], references: [id])
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  joinedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  // Relations
+  exam   Exam   @relation(fields: [examId], references: [id])
+  examId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model ExamResult {
-  id          String   @id @default(uuid())
-  examId      String
-  exam        Exam     @relation(fields: [examId], references: [id])
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  totalScore  Int
-  lastUpdated DateTime @updatedAt
+  id        String   @id @default(uuid())
+  score     Int
+  createdAt DateTime @default(now())
+
+  // Relations
+  exam   Exam   @relation(fields: [examId], references: [id])
+  examId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+// ===== Better Auth Required Models =====
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                       String    @id @default(uuid())
+  userId                   String
+  accountId                String
+  providerId               String
+  accessToken              String?
+  refreshToken             String?
+  idToken                  String?
+  accessTokenExpiresAt     DateTime?
+  refreshTokenExpiresAt    DateTime?
+  scope                    String?
+  password                 String?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
 }
