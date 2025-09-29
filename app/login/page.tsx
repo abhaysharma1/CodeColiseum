@@ -5,12 +5,16 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
 
 import { toast } from "sonner";
+import { useState } from "react";
+import VerifyEmailForm from "@/components/verifyEmailForm";
 
 export default function LoginPage() {
+  const [showVerifyBox,setShowVerifyBox] = useState(false)
 
 
   return (
-    <div className="dark">
+    <div className="">
+      {showVerifyBox && <VerifyEmailForm setShowVerifyBox={setShowVerifyBox}   />}
       <div className="grid min-h-svh lg:grid-cols-2 ">
         <div className="flex flex-col gap-4 p-6 md:p-10">
           <div className="flex justify-center gap-2 md:justify-start">
@@ -23,7 +27,7 @@ export default function LoginPage() {
           </div>
           <div className="flex flex-1 items-center justify-center">
             <div className="w-full max-w-xs">
-              <LoginForm />
+              <LoginForm setShowVerifyBox={setShowVerifyBox}/>
             </div>
           </div>
         </div>

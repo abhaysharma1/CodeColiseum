@@ -4,8 +4,8 @@ export const config = {
       ? process.env.VERCEL_PROJECT_PRODUCTION_URL ??
         process.env.NEXT_PUBLIC_APP_URL!
       : "localhost:3000",
-  social: {
-    github: "https://github.com/akash3444/shadcn-ui-blocks",
-    twitter: "https://twitter.com/shadcnui_blocks",
-  },
+  // social: {
+  //   github: "https://github.com/akash3444/shadcn-ui-blocks",
+  //   twitter: "https://twitter.com/shadcnui_blocks",
+  // },
 };

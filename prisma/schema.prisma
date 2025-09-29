@@ -14,7 +14,8 @@ model User {
   id            String   @id @default(uuid())
   name          String
   email         String   @unique
-  role          String
+  role          UserRole?
+  isOnboarded   Boolean @default(false)
   emailVerified Boolean  @default(false)
   image         String?
   createdAt     DateTime @default(now())
