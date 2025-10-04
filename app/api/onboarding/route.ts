@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { id, role } = body;
 
-  const prisma = new PrismaClient();
 
   const prevuser = await prisma.user.findFirst({
     where: {

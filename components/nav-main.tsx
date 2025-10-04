@@ -1,37 +1,19 @@
-"use client"
+"use client";
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
-
-import { Button } from "@/components/ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { useState } from "react"
+} from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
+import { MdLibraryBooks, MdOutlineSpaceDashboard } from "react-icons/md";
+import { PiStudentBold } from "react-icons/pi";
 
-export function NavMain({page}:{page:string}) {
+export function NavMain({ page }: { page: string }) {
+  const router = useRouter();
 
-
-
-
-
-  let items = [
-    {
-      title: "Dashboard",
-      icon: ""
-    },
-    {
-      title: "Tests",
-      icon: ""
-    },
-    {
-      title: "Previous Tests",
-      icon: ""
-    }
-  ]
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -55,16 +37,47 @@ export function NavMain({page}:{page:string}) {
           </SidebarMenuItem>
         </SidebarMenu> */}
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title} className={page==item.title ? "bg-primary text-primary-foreground rounded-md" : ""}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          <SidebarMenuItem
+            className={
+              page == "DASHBOARD"
+                ? "bg-primary text-primary-foreground rounded-md"
+                : ""
+            }
+            onClick={() => router.replace("/dashboard/teacher")}
+          >
+            <SidebarMenuButton tooltip={"Dashboard"}>
+              <MdOutlineSpaceDashboard />
+              <span>Dashboard</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem
+            className={
+              page == "STUDENTS"
+                ? "bg-primary text-primary-foreground rounded-md"
+                : ""
+            }
+            onClick={() => router.replace("/dashboard/teacher/students")}
+          >
+            <SidebarMenuButton tooltip={"Students"}>
+              <PiStudentBold />
+              <span>Students</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem
+            className={
+              page == "PROBLEMS"
+                ? "bg-primary text-primary-foreground rounded-md"
+                : ""
+            }
+            onClick={() => router.replace("/dashboard/teacher/problems")}
+          >
+            <SidebarMenuButton tooltip={"Problems"}>
+              <MdLibraryBooks />
+              <span>Problems</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }

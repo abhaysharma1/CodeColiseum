@@ -9,8 +9,7 @@ import {
 } from "react";
 import { authClient } from "@/lib/auth-client";
 import { BetterFetchError } from "better-auth/react";
-import { User, UserObject } from "@/interfaces/interface";
-
+import { User } from "@/interfaces/interface";
 
 interface AuthContexttype {
   user: User | null | undefined;
@@ -30,23 +29,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     refetch,
   } = authClient.useSession();
 
-
-
   const logout = async () => {
     await authClient.signOut();
   };
 
-
-
   return (
     <AuthContext.Provider
       value={{
-        user: data?.user,
+        user: data?.user as User,
         loading,
         refetch,
         error,
         logout,
-        
       }}
     >
       {children}
