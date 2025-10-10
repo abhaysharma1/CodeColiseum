@@ -111,19 +111,26 @@ export function NavUser({}: {
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={(event) => event.preventDefault()}>
-                <button onClick={changeTheme} className="w-[100%] flex">
-                  {theme == "dark" ? (
-                    <MdDarkMode className="mt-0.5 mr-1 animate-spin animate-once animate-duration-[200ms]" />
-                  ) : (
-                    <FaSun className="mt-0.5 mr-1 animate-spin animate-once animate-duration-[200ms]" />
-                  )}
-                  <div className="flex justify-between w-[100%]">
-                    <div className="">Switch Theme</div>
-                    <Switch checked={theme == "light" ? true : false} />
+              <DropdownMenuItem asChild>
+                <button
+                  onClick={(event) => {
+                    event.preventDefault();
+                    changeTheme();
+                  }}
+                  className="w-full flex items-center justify-between"
+                >
+                  <div className="flex items-center">
+                    {theme === "dark" ? (
+                      <MdDarkMode className="mt-0.5 mr-1 animate-spin animate-once animate-duration-[200ms]" />
+                    ) : (
+                      <FaSun className="mt-0.5 mr-1 animate-spin animate-once animate-duration-[200ms]" />
+                    )}
+                    <span>Switch Theme</span>
                   </div>
+                  <Switch checked={theme === "light"} />
                 </button>
               </DropdownMenuItem>
+
               {/* <DropdownMenuItem>
                 <IconCreditCard />
                 Billing

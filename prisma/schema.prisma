@@ -1,5 +1,3 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,9 +5,9 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // use direct Postgres connection for migrations
 }
 
+// ===== User Model =====
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -30,8 +28,8 @@ model User {
   accounts    Account[]
 
   // Relation for Groups
-  createdGroups Group[]       @relation("TeacherGroups") // ← added
-  memberGroups  GroupMember[] // ← added
+  createdGroups Group[]       @relation("TeacherGroups")
+  memberGroups  GroupMember[]
 
   @@map("user")
 }
@@ -41,6 +39,7 @@ enum UserRole {
   STUDENT
 }
 
+// ===== Exam System =====
 model Exam {
   id          String   @id @default(uuid())
   title       String
@@ -48,7 +47,6 @@ model Exam {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
   creator     User             @relation("CreatedExams", fields: [creatorId], references: [id])
   creatorId   String
   problems    ExamProblem[]
@@ -70,11 +68,13 @@ model ExamProblem {
 
 model Problem {
   id           String        @id @default(uuid())
+  number       Int           @unique
   title        String
   description  String
   difficulty   String
   testCases    TestCase[]
   examProblems ExamProblem[]
+  tags         ProblemTag[]   // many-to-many relation with Tag
 }
 
 model TestCase {
@@ -91,7 +91,6 @@ model Submission {
   language  String
   createdAt DateTime @default(now())
 
-  // Relations
   exam   Exam   @relation(fields: [examId], references: [id])
   examId String
   user   User   @relation(fields: [userId], references: [id])
@@ -102,11 +101,12 @@ model ExamEnrollment {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
-  // Relations
   exam   Exam   @relation(fields: [examId], references: [id])
   examId String
   user   User   @relation(fields: [userId], references: [id])
   userId String
+
+  @@unique([examId, userId])
 }
 
 model ExamResult {
@@ -114,15 +114,13 @@ model ExamResult {
   score     Int
   createdAt DateTime @default(now())
 
-  // Relations
   exam   Exam   @relation(fields: [examId], references: [id])
   examId String
   user   User   @relation(fields: [userId], references: [id])
   userId String
 }
 
-// ===== Better Auth Required Models =====
-
+// ===== Better Auth Models =====
 model Session {
   id        String   @id @default(uuid())
   userId    String
@@ -160,7 +158,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
@@ -170,7 +168,7 @@ model Verification {
   @@map("verification")
 }
 
-// Students groups
+// ===== Student Groups =====
 model Group {
   id          String        @id @default(uuid())
   name        String
@@ -179,8 +177,7 @@ model Group {
   creatorId   String
   members     GroupMember[]
   noOfMembers Int @default(0)
-
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 }
 
 model GroupMember {
@@ -192,4 +189,21 @@ model GroupMember {
   addedAt   DateTime @default(now())
 
   @@unique([groupId, studentId])
+}
+
+// ===== Tags System =====
+model Tag {
+  id       String       @id @default(uuid())
+  name     String       @unique
+  problems ProblemTag[]
+}
+
+model ProblemTag {
+  problem   Problem @relation(fields: [problemId], references: [id])
+  problemId String
+
+  tag   Tag   @relation(fields: [tagId], references: [id])
+  tagId String
+
+  @@id([problemId, tagId])
 }

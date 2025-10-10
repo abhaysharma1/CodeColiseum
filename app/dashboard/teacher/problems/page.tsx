@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import React from "react";
+import ProblemsTable from "./problemsTable";
 
 function Problems() {
   return (
@@ -8,9 +9,9 @@ function Problems() {
         <SiteHeader name="Problems" />
       </div>
 
-      <div className="flex-1 h-full w-full rounded-b-lg">
+      <div className="flex-1 h-full w-full rounded-b-lg p-7">
         <div className="">
-
+          <ProblemsTable />
         </div>
       </div>
     </div>
