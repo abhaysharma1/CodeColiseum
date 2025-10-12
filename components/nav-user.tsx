@@ -130,15 +130,6 @@ export function NavUser({}: {
                   <Switch checked={theme === "light"} />
                 </button>
               </DropdownMenuItem>
-
-              {/* <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logoutcust}>

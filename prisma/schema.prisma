@@ -72,17 +72,19 @@ model Problem {
   title        String
   description  String
   difficulty   String
-  testCases    TestCase[]
+  source       String        @default("Unknown")
   examProblems ExamProblem[]
-  tags         ProblemTag[]   // many-to-many relation with Tag
+  tags         ProblemTag[]
+  testCase     TestCase? // one-to-one relation
 }
 
 model TestCase {
-  id        String  @id @default(uuid())
-  input     String
-  output    String
-  problem   Problem @relation(fields: [problemId], references: [id])
-  problemId String
+  id        String   @id @default(uuid())
+  cases     Json // Array of {input: string, output: string, isHidden: boolean}
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String   @unique // one-to-one relationship
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Submission {
@@ -176,8 +178,8 @@ model Group {
   creator     User          @relation("TeacherGroups", fields: [creatorId], references: [id])
   creatorId   String
   members     GroupMember[]
-  noOfMembers Int @default(0)
-  createdAt   DateTime @default(now())
+  noOfMembers Int           @default(0)
+  createdAt   DateTime      @default(now())
 }
 
 model GroupMember {
@@ -202,7 +204,7 @@ model ProblemTag {
   problem   Problem @relation(fields: [problemId], references: [id])
   problemId String
 
-  tag   Tag   @relation(fields: [tagId], references: [id])
+  tag   Tag    @relation(fields: [tagId], references: [id])
   tagId String
 
   @@id([problemId, tagId])

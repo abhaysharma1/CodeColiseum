@@ -1,9 +1,10 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import DetailsBlock from "./detailsBlock";
 import CodingBlock from "./codingBlock";
 import axios from "axios";
+import { toast } from "sonner";
 
 interface descriptionData {
   id: string;
@@ -16,25 +17,35 @@ interface descriptionData {
 function QuestionSolvingPage() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const [loadingDetails, setLoadingDetails] = useState(true);
+  const router = useRouter();
 
-  const [descriptionData, setDescriptionData] = useState<descriptionData>({
-    id: "hhh",
-    number: 0,
-    difficulty: "",
-    description: "",
-    title: "",
-  });
-
+  const [descriptionData, setDescriptionData] = useState<descriptionData[]>([]);
 
   const getProblemDescription = async () => {
-    const response = await axios.post(
-      `/api/problems/getproblems?page=1&limit=1`,
-      {
-        searchValue: id,
+    try {
+      const response = await axios.post(
+        `/api/problems/getproblems?page=1&limit=1`,
+        {
+          searchValue: id,
+        }
+      );
+      setDescriptionData(response.data as descriptionData[]);
+    } catch (error: any) {
+      if (error.status == 400 || error.status == 500) {
+        toast.error("Didn't Found Your Problem");
+        router.replace("/not-found");
+        return;
       }
-    );
-    setDescriptionData(response.data as descriptionData);
+      toast.error(error)
+    }
   };
+
+  useEffect(() => {
+    if (descriptionData[0]?.id) {
+      setLoadingDetails(false);
+    }
+  }, [descriptionData]);
 
   useEffect(() => {
     getProblemDescription();
@@ -43,10 +54,13 @@ function QuestionSolvingPage() {
   return (
     <div className="flex justify-center">
       <div>
-        <DetailsBlock data={descriptionData} />
+        <DetailsBlock
+          data={descriptionData || []}
+          loadingDetails={loadingDetails}
+        />
       </div>
       <div>
-        <CodingBlock />
+        <CodingBlock questionId={id ?? ""} />
       </div>
     </div>
   );

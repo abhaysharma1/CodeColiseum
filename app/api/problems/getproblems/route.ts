@@ -63,6 +63,13 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  if (!data[0].id) {
+    return NextResponse.json(data, {
+      status: 400,
+      statusText: "Didn't Find your Problem",
+    });
+  }
+
   return NextResponse.json(data, {
     status: 201,
     statusText: "Problems fetched Successfully",
