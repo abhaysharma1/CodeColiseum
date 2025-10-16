@@ -36,10 +36,6 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   }
 
 
-  if(user && !error && !user.isOnboarded){
-    router.replace("/onboarding")
-  }
-
   if (user && !error) {
     return children;
   }

@@ -150,14 +150,14 @@ const data = {
   ],
 };
 
-interface AppsidebarProps {
+interface TeacherSidebarProps {
   user: any;
   variant: "sidebar" | "floating" | "inset" | undefined;
   page: string
   props?: React.ComponentProps<typeof Sidebar>;
 }
 
-export function AppSidebar({ user, variant,page, ...props }: AppsidebarProps) {
+export function AppSidebar({ user, variant,page, ...props }: TeacherSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" variant={variant}>
       <SidebarHeader>

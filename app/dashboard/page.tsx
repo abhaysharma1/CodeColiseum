@@ -1,35 +1,11 @@
-'use client'
-import { SiteHeader } from "@/components/site-header";
-import { useAuth } from "@/context/authcontext";
-import { useRouter } from "next/navigation";
-import React from "react";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
-
-function Dashboard() {
-
-  const {user} = useAuth()
-  const router = useRouter();
-
-
-  if(user?.role == "TEACHER"){
-    router.replace("/dashboard/teacher")
-  }
-
-
-
+export default function Dashboard() {
+  // Middleware handles the redirect based on role
+  // This page only shows briefly during the redirect
   return (
-    <>
-
-      <SiteHeader name={"DASHBOARD"} />
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 px-10 h-[100%] md:gap-6 md:py-6">
-            <div>Dashboard</div>
-          </div>
-        </div>
-      </div>
-    </>
+    <div className="flex items-center justify-center h-screen w-screen">
+      <div><Spinner variant="ring" /></div>
+    </div>
   );
 }
-
-export default Dashboard;

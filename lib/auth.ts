@@ -1,9 +1,8 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "@prisma/client";
-import { transporter } from "./nodemailer";
-
-const prisma = new PrismaClient();
+import prisma from "./prisma";
+import transporter from "./nodemailer";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -31,7 +30,7 @@ export const auth = betterAuth({
         type: "boolean",
         required: false,
         input: true,
-        defaultValue:false
+        defaultValue: false,
       },
     },
   },

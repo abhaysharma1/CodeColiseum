@@ -1,10 +1,9 @@
 "use client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ProtectedRoute } from "@/components/protectedroute";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 
 export default function DashBoardLayout({ children }: { children: ReactNode }) {
-
   return (
     <ProtectedRoute>
       <SidebarProvider
