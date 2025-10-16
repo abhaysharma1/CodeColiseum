@@ -112,7 +112,7 @@ export function NavUser({}: {
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <button
+                <div
                   onClick={(event) => {
                     event.preventDefault();
                     changeTheme();
@@ -128,7 +128,7 @@ export function NavUser({}: {
                     <span>Switch Theme</span>
                   </div>
                   <Switch checked={theme === "light"} />
-                </button>
+                </div>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

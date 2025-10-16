@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Editor from "@monaco-editor/react";
+import Editor, { OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import axios from "axios";
-import { NextApiResponse } from "next";
 
 interface sentCode {
   questionId: string;
@@ -27,13 +28,23 @@ function CodingBlock({ questionId }: { questionId: string }) {
   const [editorTheme, setEditorTheme] = useState("vs-dark");
   const { theme, setTheme } = useTheme();
   const [code, setCode] = useState<string>("");
-  const [language, setLanguage] = useState("javascript");
+  const [language, setLanguage] = useState("cpp");
   const [editorInFocus, setEditorInFocus] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [running, setRunning] = useState(false);
 
-  const onRun = async ({ mode }: { mode: string }) => {
-    // Put Code Running Logic Here
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
+      noSyntaxValidation: true,
+    });
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
+      noSyntaxValidation: true,
+    });
+  };
+
+  const onRun = async () => {
     setRunning(true);
     if ((code && code?.length < 1) || code == "//Example Code") {
       toast.error("Please Type Something");
@@ -53,7 +64,9 @@ function CodingBlock({ questionId }: { questionId: string }) {
         toast.error(response.statusText);
       }
     } catch (error) {
-
+      console.log(error);
+    } finally {
+      setRunning(false);
     }
   };
 
@@ -77,7 +90,7 @@ function CodingBlock({ questionId }: { questionId: string }) {
           <div className="flex-1 min-h-0">
             <Editor
               height="100%"
-              defaultLanguage={language}
+              language={language}
               defaultValue="//Example Code"
               value={code}
               onChange={(event) => setCode(event ?? "")}
@@ -94,68 +107,71 @@ function CodingBlock({ questionId }: { questionId: string }) {
                 snippetSuggestions: "none",
                 smoothScrolling: true,
                 wordBasedSuggestions: "off",
-                quickSuggestions: false, // Disable quick suggestions
-                suggestOnTriggerCharacters: false, // Disable suggestions on trigger characters
-                acceptSuggestionOnEnter: "off", // Disable accepting suggestions with Enter
-                tabCompletion: "off", // Disable tab completion
+                quickSuggestions: false,
+                suggestOnTriggerCharacters: false,
+                acceptSuggestionOnEnter: "off",
+                tabCompletion: "off",
                 inlineSuggest: {
-                  enabled: false, // Disable inline suggestions (like GitHub Copilot style)
+                  enabled: false,
                 },
                 showFoldingControls: "always",
                 quickSuggestionsDelay: 0,
                 parameterHints: {
-                  enabled: false, // Disable parameter hints
+                  enabled: false,
                 },
                 hover: {
-                  enabled: false, // Disable hover tooltips (optional)
+                  enabled: false,
                 },
                 glyphMargin: false,
               }}
-              onMount={(editor, monaco) => {
-                // Disable all validation/diagnostics for the language
-                monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(
-                  {
-                    noSemanticValidation: true,
-                    noSyntaxValidation: true,
-                  }
-                );
-
-                monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(
-                  {
-                    noSemanticValidation: true,
-                    noSyntaxValidation: true,
-                  }
-                );
-              }}
+              onMount={handleEditorDidMount}
             />
           </div>
           <div className="w-full h-12 flex-shrink-0 bg-background flex justify-between items-center px-3 gap-3">
             <DropdownMenu>
-              <DropdownMenuTrigger
-                className="h-[70%]"
-                onClick={(event) => event.preventDefault()}
-                asChild
-              >
+              <DropdownMenuTrigger className="h-[70%]" asChild>
                 <Button variant="outline">
                   <IoMdSettings />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="">
                 <DropdownMenuItem
-                  onClick={() =>
-                    setTheme((prev) => (theme === "light" ? "dark" : "light"))
-                  }
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
                 >
                   Switch Theme
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Team</DropdownMenuItem>
-                <DropdownMenuItem>Subscription</DropdownMenuItem> */}
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <div className="flex justify-between w-full mr-2">
+                      <span>Language</span>
+                      <span className="ml-2 text-muted-foreground">
+                        {language.charAt(0).toUpperCase() + language.slice(1)}
+                      </span>
+                    </div>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem onClick={() => setLanguage("javascript")}>
+                      JavaScript
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setLanguage("typescript")}>
+                      TypeScript
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setLanguage("cpp")}>
+                      C++
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
               </DropdownMenuContent>
             </DropdownMenu>
             <ButtonGroup className="h-[70%]">
-              <Button disabled={running} variant="outline" className="h-[100%]">
-                {submitting ? "Running" : "Run"}
+              <Button
+                disabled={running}
+                variant="outline"
+                className="h-[100%]"
+                onClick={() => onRun()}
+              >
+                {running ? "Running" : "Run"}
               </Button>
               <Button
                 disabled={submitting}

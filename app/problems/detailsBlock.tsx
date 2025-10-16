@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Markdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import TestCases from "./testCases";
 
 interface descriptionData {
   id: string;
@@ -57,7 +58,7 @@ function DetailsBlock({
             )}
           </TabsContent>
           <TabsContent value="testcases">
-            Change your password here.
+            <TestCases questionId={data[0]?.id}/>
           </TabsContent>
         </Tabs>
       </div>

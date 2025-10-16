@@ -117,7 +117,7 @@ function ProblemsTable() {
               <TableRow
                 key={problem.id}
                 className="cursor-pointer animate-fade animate-once"
-                onDoubleClick={() =>
+                onClick={() =>
                   router.replace(`/problems?id=${problem.id}`)
                 }
               >
