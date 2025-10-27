@@ -5,18 +5,19 @@ import { headers } from "next/headers";
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
-  // Add CSP headers for all routes to allow GitHub OAuth
+  // Add CSP headers for all routes to allow GitHub OAuth and Monaco Editor
   const response = NextResponse.next();
   
-  // Configure CSP to allow GitHub assets and inline scripts with nonce/hash
+  // Configure CSP to allow GitHub assets, Monaco Editor, and inline scripts
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://github.githubassets.com;
-    style-src 'self' 'unsafe-inline';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://github.githubassets.com https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
     img-src 'self' blob: data: https:;
-    font-src 'self' data:;
+    font-src 'self' data: https://cdn.jsdelivr.net;
     connect-src 'self' https://github.com https://api.github.com;
     frame-src 'self' https://github.com;
+    worker-src 'self' blob:;
   `.replace(/\s{2,}/g, ' ').trim();
 
   response.headers.set('Content-Security-Policy', cspHeader);
