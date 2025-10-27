@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -102,7 +102,7 @@ function ProblemsTable() {
         </div>
 
         <Table>
-          <TableCaption>Hmmmmm, Couldn't think of anything catchy.</TableCaption>
+          <TableCaption>Hmmmmm&apos; Couldn&apos;t think of anything catchy.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">No.</TableHead>

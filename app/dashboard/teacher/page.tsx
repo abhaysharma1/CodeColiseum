@@ -141,7 +141,7 @@ export interface incomingData {
   participants: string[];
 }
 
-export const columns: ColumnDef<incomingData>[] = [
+const columns: ColumnDef<incomingData>[] = [
   {
     id: "select",
     header: ({ table }) => (

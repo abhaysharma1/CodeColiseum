@@ -1,7 +1,7 @@
 "use client";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import React, { MouseEvent, MouseEventHandler, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/shadcn-io/dropzone";
 import { useState } from "react";
 import { UploadIcon } from "lucide-react";
-import { RxCross2 } from "react-icons/rx";
 import CreateGroupBox from "./createGroupBox";
 import { toast } from "sonner";
 import { SiteHeader } from "@/components/site-header";

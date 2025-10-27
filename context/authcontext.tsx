@@ -4,8 +4,6 @@ import {
   createContext,
   useContext,
   ReactNode,
-  useEffect,
-  useState,
 } from "react";
 import { authClient } from "@/lib/auth-client";
 import { BetterFetchError } from "better-auth/react";

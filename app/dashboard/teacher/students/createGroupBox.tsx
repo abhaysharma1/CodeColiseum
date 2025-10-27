@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SidebarInput } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { FileInput } from "lucide-react";
-import React, { ChangeEvent, Dispatch, SetStateAction, useEffect } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { RxCross2 } from "react-icons/rx";
 
 interface newgroupdataprops {

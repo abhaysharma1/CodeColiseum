@@ -5,12 +5,9 @@ import { Button } from "./ui/button";
 import React, {
   Dispatch,
   SetStateAction,
-  use,
-  useEffect,
   useState,
 } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/authcontext";
 import { authClient } from "@/lib/auth-client";
 
 function VerifyEmailForm({

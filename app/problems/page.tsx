@@ -1,10 +1,11 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import DetailsBlock from "./detailsBlock";
 import CodingBlock from "./codingBlock";
 import axios from "axios";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 interface descriptionData {
   id: string;
@@ -14,7 +15,7 @@ interface descriptionData {
   title: string;
 }
 
-function QuestionSolvingPage() {
+function QuestionSolvingPageContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [loadingDetails, setLoadingDetails] = useState(true);
@@ -37,7 +38,7 @@ function QuestionSolvingPage() {
         router.replace("/not-found");
         return;
       }
-      toast.error(error)
+      toast.error(error);
     }
   };
 
@@ -63,6 +64,20 @@ function QuestionSolvingPage() {
         <CodingBlock questionId={id ?? ""} />
       </div>
     </div>
+  );
+}
+
+function QuestionSolvingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div>
+          <Spinner variant="ring" />
+        </div>
+      }
+    >
+      <QuestionSolvingPageContent />
+    </Suspense>
   );
 }
 

@@ -1,4 +1,3 @@
-import { description } from "@/components/chart-area-interactive";
 import prisma from "@/lib/prisma";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";

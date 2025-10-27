@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  let notFoundMembers = <String[]>[];
-  let notStudents = <String[]>[];
+  const notFoundMembers = <string[]>[];
+  const notStudents = <string[]>[];
 
   await Promise.all(
     emails.map(async (email:string) => {
