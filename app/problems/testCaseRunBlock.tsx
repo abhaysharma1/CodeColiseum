@@ -53,7 +53,7 @@ function TestCaseRunBlock({
                 <div>
                   Time taken: {item.time} ms
                   <br />
-                  Memory used: {item.memory} mb
+                  Memory used: {item.memory} kb
                 </div>
                 <div>
                   {item.status.description === "Accepted" ? (
