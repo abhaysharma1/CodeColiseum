@@ -18,20 +18,182 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import axios from "axios";
+import { getLanguageId } from "@/utils/getLanguageId";
 
 interface sentCode {
   questionId: string;
+  languageId: number;
   code: string;
 }
 
-function CodingBlock({ questionId }: { questionId: string }) {
-  const [editorTheme, setEditorTheme] = useState("vs-dark");
-  const { theme, setTheme } = useTheme();
+interface runTestCaseType {
+  responses: {
+    stdout: string | null;
+    time: string | null;
+    memory: number | null;
+    stderr: string | null;
+    token: string;
+    compile_output: string | null;
+    message: string | null;
+    status: {
+      id: number;
+      description: string;
+    };
+  }[];
+  cases: {
+    input: string;
+    output: string;
+  }[];
+}
+
+const availableLanguages = [
+  {
+    id: 50,
+    name: "C",
+    monacoLang: "c",
+  },
+  {
+    id: 54,
+    name: "C++",
+    monacoLang: "cpp",
+  },
+  {
+    id: 51,
+    name: "C#",
+    monacoLang: "csharp",
+  },
+  {
+    id: 60,
+    name: "Go",
+    monacoLang: "go",
+  },
+  {
+    id: 62,
+    name: "Java",
+    monacoLang: "java",
+  },
+  {
+    id: 63,
+    name: "JavaScript",
+    monacoLang: "javascript",
+  },
+  {
+    id: 71,
+    name: "Python",
+    monacoLang: "python",
+  },
+  {
+    id: 73,
+    name: "Rust",
+    monacoLang: "rust",
+  },
+  {
+    id: 74,
+    name: "TypeScript",
+    monacoLang: "typescript",
+  },
+];
+
+// Theme names must match exactly with the JSON files in monaco-themes
+const themeFileMap: Record<string, string> = {
+  Active4D: "Active4D",
+  "All Hallows Eve": "All Hallows Eve",
+  Amy: "Amy",
+  "Birds of Paradise": "Birds of Paradise",
+  Blackboard: "Blackboard",
+  "Brilliance Black": "Brilliance Black",
+  "Brilliance Dull": "Brilliance Dull",
+  "Chrome DevTools": "Chrome DevTools",
+  "Clouds Midnight": "Clouds Midnight",
+  Clouds: "Clouds",
+  Cobalt: "Cobalt",
+  Dawn: "Dawn",
+  Dracula: "Dracula",
+  Dreamweaver: "Dreamweaver",
+  Eiffel: "Eiffel",
+  "Espresso Libre": "Espresso Libre",
+  GitHub: "GitHub",
+  IDLE: "IDLE",
+  Katzenmilch: "Katzenmilch",
+  "Kuroir Theme": "Kuroir Theme",
+  LAZY: "LAZY",
+  "MagicWB (Amiga)": "MagicWB (Amiga)",
+  "Merbivore Soft": "Merbivore Soft",
+  Merbivore: "Merbivore",
+  "Monokai Bright": "Monokai Bright",
+  Monokai: "Monokai",
+  "Night Owl": "Night Owl",
+  Nord: "Nord",
+  "Oceanic Next": "Oceanic Next",
+  "Pastels on Dark": "Pastels on Dark",
+  "Slush and Poppies": "Slush and Poppies",
+  "Solarized-dark": "Solarized-dark",
+  "Solarized-light": "Solarized-light",
+  SpaceCadet: "SpaceCadet",
+  Sunburst: "Sunburst",
+  "Tomorrow-Night-Blue": "Tomorrow-Night-Blue",
+  "Tomorrow-Night-Bright": "Tomorrow-Night-Bright",
+  "Tomorrow-Night-Eighties": "Tomorrow-Night-Eighties",
+  "Tomorrow-Night": "Tomorrow-Night",
+  Tomorrow: "Tomorrow",
+  Twilight: "Twilight",
+  "Upstream Sunburst": "Upstream Sunburst",
+  "Vibrant Ink": "Vibrant Ink",
+};
+
+const availableThemes = Object.keys(themeFileMap);
+
+function CodingBlock({
+  questionId,
+  setRunTestCaseResuts,
+}: {
+  questionId: string;
+  setRunTestCaseResuts: React.Dispatch<
+    React.SetStateAction<runTestCaseType | undefined>
+  >;
+}) {
+  const [editorTheme, setEditorTheme] = useState("Sunburst");
   const [code, setCode] = useState<string>("");
   const [language, setLanguage] = useState("cpp");
   const [editorInFocus, setEditorInFocus] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [running, setRunning] = useState(false);
+  const [themeList, setThemeList] = useState<string[]>();
+  const [monacoInstance, setMonacoInstance] = useState<any>(null);
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setThemeList(availableThemes);
+  }, []);
+
+  useEffect(() => {
+    const loadTheme = async (themeName: string) => {
+      if (!monacoInstance || themeName === "vs-dark") {
+        return;
+      }
+
+      try {
+        const fileName = themeFileMap[themeName];
+        if (!fileName) {
+          throw new Error(`Theme "${themeName}" not found in theme mapping`);
+        }
+
+        const themeData = await import(`monaco-themes/themes/${fileName}.json`);
+        const safeThemeName = themeName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-");
+        monacoInstance.editor.defineTheme(safeThemeName, themeData);
+        monacoInstance.editor.setTheme(safeThemeName);
+      } catch (error) {
+        console.error(`Failed to load theme "${themeName}"`, error);
+        toast.error(`Failed to load theme "${themeName}"`);
+        monacoInstance.editor.setTheme("vs-dark");
+        setEditorTheme("vs-dark");
+      }
+    };
+
+    loadTheme(editorTheme);
+  }, [editorTheme, monacoInstance]);
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -51,14 +213,18 @@ function CodingBlock({ questionId }: { questionId: string }) {
       setRunning(false);
       return;
     }
+
+    const languageId = getLanguageId(language) ?? 54; // C++ as Fallback
+
     const sentData: sentCode = {
       questionId: questionId,
+      languageId: languageId,
       code: code,
     };
 
     try {
       const response = await axios.post("/api/problems/runcode", sentData);
-
+      setRunTestCaseResuts(response.data as runTestCaseType);
       if (response.status > 400) {
         toast.error("Couldn't run you code");
         toast.error(response.statusText);
@@ -70,15 +236,11 @@ function CodingBlock({ questionId }: { questionId: string }) {
     }
   };
 
-  useEffect(() => {
-    setEditorTheme(theme === "light" ? "light" : "vs-dark");
-  }, [theme]);
-
   return (
     <div>
       <div
         title="tab navbar"
-        className="w-[calc(60vw-2.5rem)] h-[calc(100vh-2.5rem)] outline-1 m-5 outline-offset-4 rounded-md py-3 px-5 box-border"
+        className="w-[calc(60vw-2.5rem)] h-[calc(100vh-6.5rem)] outline-1 m-5 outline-offset-8 rounded-md py-3 px-5"
       >
         <div
           className={`rounded-md overflow-hidden border-2 h-full flex flex-col min-h-[300px] ${
@@ -96,6 +258,7 @@ function CodingBlock({ questionId }: { questionId: string }) {
               onChange={(event) => setCode(event ?? "")}
               theme={editorTheme}
               loading={<Spinner variant="ring" />}
+              beforeMount={setMonacoInstance}
               options={{
                 formatOnType: true,
                 cursorBlinking: "expand",
@@ -138,28 +301,58 @@ function CodingBlock({ questionId }: { questionId: string }) {
                 <DropdownMenuItem
                   onClick={() => setTheme(theme === "light" ? "dark" : "light")}
                 >
-                  Switch Theme
+                  Switch Website Theme
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <div className="flex justify-between w-full mr-2">
+                      <span>Editor Theme</span>
+                      <span className="ml-2 text-muted-foreground">
+                        {editorTheme}
+                      </span>
+                    </div>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent className="max-h-[400px] overflow-y-auto">
+                    {themeList?.map((item) => (
+                      <DropdownMenuItem
+                        key={item}
+                        onClick={() => setEditorTheme(item)}
+                      >
+                        {item
+                          .split("-")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1)
+                          )
+                          .join(" ")}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <div className="flex justify-between w-full mr-2">
                       <span>Language</span>
                       <span className="ml-2 text-muted-foreground">
-                        {language.charAt(0).toUpperCase() + language.slice(1)}
+                        {
+                          availableLanguages.find(
+                            (lang) => lang.monacoLang === language
+                          )?.name
+                        }
                       </span>
                     </div>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => setLanguage("javascript")}>
-                      JavaScript
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setLanguage("typescript")}>
-                      TypeScript
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setLanguage("cpp")}>
-                      C++
-                    </DropdownMenuItem>
+                    {availableLanguages.map((item) => (
+                      <DropdownMenuItem
+                        key={item.id}
+                        onClick={() => setLanguage(item.monacoLang)}
+                      >
+                        {item.name.at(0)?.toUpperCase() +
+                          item.name.slice(1).toLowerCase()}
+                      </DropdownMenuItem>
+                    ))}
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
               </DropdownMenuContent>

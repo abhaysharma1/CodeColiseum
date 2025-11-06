@@ -190,6 +190,7 @@ model Group {
   members     GroupMember[]
   noOfMembers Int           @default(0)
   createdAt   DateTime      @default(now())
+  joinByLink  Boolean       @default(true)
 }
 
 model GroupMember {

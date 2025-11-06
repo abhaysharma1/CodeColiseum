@@ -2,72 +2,113 @@ import prisma from "@/lib/prisma";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-type TestCase = {
-  input: string;
-  output: string;
-};
+interface runTestCaseType {
+  id: string;
+  cases: any;
+  problemId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-interface ResponseFromJudge {
-  data: {
-    stdout: string | null;
-    time: string;
-    memory: number;
-    stderr: string | null;
-    token: string;
-    compile_output: string | null;
-    message: string | null;
-    status: {
-      id: number;
-      description: string;
-    };
+interface JudgeResponse {
+  stdout: string | null;
+  time: string;
+  memory: number;
+  stderr: string | null;
+  token: string;
+  compile_output: string | null;
+  message: string | null;
+  status: {
+    id: number;
+    description: string;
   };
 }
 
 export async function POST(request: NextRequest) {
-  const reqbody = await request.json();
-  const { questionId, code } = reqbody;
+  try {
+    const reqbody = await request.json();
+    const { questionId, languageId, code } = reqbody;
 
-  const runTestCase = await prisma.runTestCase.findUnique({
-    where: {
-      problemId: questionId,
-    },
-  });
+    const runTestCase: runTestCaseType | null =
+      await prisma.runTestCase.findUnique({
+        where: {
+          problemId: questionId,
+        },
+      });
 
-  const cases = runTestCase?.cases as TestCase[];
+    if (!runTestCase) {
+      return NextResponse.json(
+        { error: "Test cases not found for this problem" },
+        { status: 404 }
+      );
+    }
 
-  // cases.map(async (item) => {
-  //   const codeToJudge = {
-  //     language_id: 52, //C++
-  //     source_code: code,
-  //     stdin: item.input ?? null,
-  //     expected_output: item.output,
-  //   };
+    let cases;
 
-  //   const responseFromJudge = await axios.post(
-  //     `${process.env.JUDGE0_DOMAIN}/submissions?base64_encoded=false&wait=true`,
-  //     codeToJudge
-  //   );
+    // Handle both string and object formats
+    if (typeof runTestCase.cases === "string") {
+      cases = JSON.parse(runTestCase.cases);
+    } else {
+      cases = JSON.parse(JSON.stringify(runTestCase.cases));
+    }
 
-  //   console.log(responseFromJudge);
-  // });
+    if (!cases || !Array.isArray(cases) || cases.length === 0) {
+      return NextResponse.json(
+        { error: "Test cases not found for this problem" },
+        { status: 404 }
+      );
+    }
 
-  const codeToJudge = {
-    language_id: 52, //C++
-    source_code: code,
-    stdin: cases[0].input ?? null,
-    expected_output: cases[0].output,
-  };
+    const submissions = cases.map((item) => ({
+      language_id: languageId,
+      source_code: code,
+      stdin: item.input,
+      expected_output: item.output,
+    }));
 
-  const responseFromJudge = await axios.post(
-    `${process.env.JUDGE0_DOMAIN}/submissions?base64_encoded=false&wait=true`,
-    codeToJudge
-  );
+    const batchResponse = await axios.post(
+      `${process.env.JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
+      { submissions: submissions }
+    );
 
-  const data = responseFromJudge.data as ResponseFromJudge;
-  console.log(data);
+    const tokens = (batchResponse.data as any[]).map((item: any) => item.token);
 
-  return NextResponse.json(
-    { data: data },
-    { status: 201, statusText: "Something" }
-  );
+    // Poll for results
+    const pollSubmission = async (token: string): Promise<JudgeResponse> => {
+      let attempts = 0;
+      const maxAttempts = 30; // Max 15 seconds (30 * 500ms)
+
+      while (attempts < maxAttempts) {
+        const statusResponse = await axios.get(
+          `${process.env.JUDGE0_DOMAIN}/submissions/${token}?base64_encoded=false`
+        );
+
+        const result = statusResponse.data as JudgeResponse;
+
+        // Status IDs: 1=In Queue, 2=Processing, 3+=Finished
+        if (result.status.id > 2) {
+          return result;
+        }
+
+        // Wait 500ms before checking again
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        attempts++;
+      }
+
+      throw new Error(`Submission ${token} timed out`);
+    };
+
+    // Poll all submissions in parallel
+    const responses = await Promise.all(
+      tokens.map((token: string) => pollSubmission(token))
+    );
+
+
+    const reply = { responses: responses, cases: cases };
+
+    return NextResponse.json(reply, { status: 200 });
+  } catch (error) {
+    console.error("Error running code:", error);
+    return NextResponse.json({ error: "Failed to run code" }, { status: 500 });
+  }
 }

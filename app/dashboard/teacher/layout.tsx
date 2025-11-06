@@ -17,10 +17,10 @@ export default function TeacherLayout({
   useEffect(() => {
     if (path == "/dashboard/teacher") {
       setPage("DASHBOARD");
-    } else if (path == "/dashboard/teacher/students") {
+    } else if (path.startsWith("/dashboard/teacher/students")) {
       setPage("STUDENTS");
-    }else if(path =="/dashboard/teacher/problems"){
-      setPage("PROBLEMS")
+    } else if (path.startsWith("/dashboard/teacher/problems")) {
+      setPage("PROBLEMS");
     }
   }, [path]);
 

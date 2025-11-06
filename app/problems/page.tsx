@@ -6,6 +6,7 @@ import CodingBlock from "./codingBlock";
 import axios from "axios";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { Navbar01 } from "@/components/ui/shadcn-io/navbar";
 
 interface descriptionData {
   id: string;
@@ -15,11 +16,32 @@ interface descriptionData {
   title: string;
 }
 
+interface runTestCaseType {
+  responses: {
+    stdout: string | null;
+    time: string | null;
+    memory: number | null;
+    stderr: string | null;
+    token: string;
+    compile_output: string | null;
+    message: string | null;
+    status: {
+      id: number;
+      description: string;
+    };
+  }[];
+  cases:{
+    input:string,
+    output:string
+  }[]
+}
 function QuestionSolvingPageContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [loadingDetails, setLoadingDetails] = useState(true);
   const router = useRouter();
+
+  const [runTestCaseResuts, setRunTestCaseResuts] = useState<runTestCaseType>();
 
   const [descriptionData, setDescriptionData] = useState<descriptionData[]>([]);
 
@@ -53,15 +75,24 @@ function QuestionSolvingPageContent() {
   }, []);
 
   return (
-    <div className="flex justify-center">
+    <div>
       <div>
-        <DetailsBlock
-          data={descriptionData || []}
-          loadingDetails={loadingDetails}
-        />
+        <Navbar01 />
       </div>
-      <div>
-        <CodingBlock questionId={id ?? ""} />
+      <div className="flex justify-center">
+        <div>
+          <DetailsBlock
+            data={descriptionData || []}
+            loadingDetails={loadingDetails}
+            runTestCaseResuts={runTestCaseResuts}
+          />
+        </div>
+        <div>
+          <CodingBlock
+            questionId={id ?? ""}
+            setRunTestCaseResuts={setRunTestCaseResuts}
+          />
+        </div>
       </div>
     </div>
   );

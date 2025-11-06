@@ -1,4 +1,5 @@
 "use client";
+import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -13,25 +14,23 @@ export interface RunTestCase {
   problemId: string;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
-  cases: TestCase[];
-}
-
-export interface GetProblemTestCasesResponse {
-  data: RunTestCase;
+  cases: string;
 }
 
 function TestCases({ questionId }: { questionId: string }) {
-  const [testData, setTestData] = useState<RunTestCase | null>(null);
+  const [testData, setTestData] = useState<TestCase[]>();
 
   const [loading, setLoading] = useState(true);
 
   const getCases = async () => {
     try {
       setLoading(true);
-      const res = await axios.get<GetProblemTestCasesResponse>(
+      const res = await axios.get(
         `/api/problems/getproblemtestcases?id=${questionId}`
       );
-      setTestData(res.data.data);
+      const { cases } = res.data as RunTestCase;
+      const jsonCases = await JSON.parse(cases);
+      setTestData(jsonCases);
     } catch (error) {
       console.log(error);
     } finally {
@@ -57,15 +56,21 @@ function TestCases({ questionId }: { questionId: string }) {
             <Spinner variant="ring" />
           </div>
         ) : (
-          <div className="text-white">
-            <div className="mb-2">Input : Output</div>
-            {testData?.cases?.map((item, index) => (
+          <div className="">
+            <div className="mb-2 w-full flex justify-between px-10">
+              <div>Input</div>
+              <div>Output</div>
+            </div>
+            {testData?.map((item, index) => (
               <div
-                className="text-foreground/70 w-full flex justify-between"
+                className="text-foreground/70 w-full whitespace-pre-line"
                 key={item.input}
               >
-                <div>{JSON.parse(item.input).join(", ")}</div>
-                <div>{item.output}</div>
+                <div className="my-3 flex w-full justify-between pl-10">
+                  <div>{item.input}</div>
+                  <div className="pr-14">{item.output}</div>
+                </div>
+                <Separator />
               </div>
             ))}
           </div>

@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(
-    { data: questionCases },
-    { status: 201, statusText: "Test Cases Fetched Successfully" }
-  );
+  return NextResponse.json(questionCases, {
+    status: 201,
+    statusText: "Test Cases Fetched Successfully",
+  });
 }

@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { TbReload } from "react-icons/tb";
+import { useRouter } from "next/navigation";
 
 export interface StudentGroup {
   id: string; // UUID
@@ -144,8 +145,7 @@ function CreatedGroups() {
 
   const [data, setData] = React.useState<StudentGroup[]>([]);
   const [loadingGroups, setLoadingGroups] = React.useState(false);
-
-  React.useEffect(()=>{console.log(data)},[data])
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -186,57 +186,71 @@ function CreatedGroups() {
   }, []);
 
   return (
-    <div className="mt-3">
+    <div className="">
       <div>
         <Label className="text-xl">Created Groups</Label>
       </div>
       <div>
         <div className="w-full">
-          <div className="flex items-center py-4">
-            <Input
-              placeholder="Search Group Name..."
-              value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-            <Button
-              className="ml-2"
-              variant="outline"
-              onClick={fetchGroups}
-              disabled={loadingGroups}
-            >
-              <TbReload />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex items-center justify-between py-4">
+            <div className="flex">
+              <Input
+                placeholder="Search Group Name..."
+                value={
+                  (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                }
+                onChange={(event) =>
+                  table.getColumn("name")?.setFilterValue(event.target.value)
+                }
+                className="max-w-sm "
+              />
+              <Button
+                className="ml-2"
+                variant="outline"
+                onClick={fetchGroups}
+                disabled={loadingGroups}
+              >
+                <TbReload />
+              </Button>
+            </div>
+
+            <div>
+              <Button
+                variant={"default"}
+                onClick={() =>
+                  router.replace("/dashboard/teacher/students/creategroup")
+                }
+                className="mx-2"
+              >
+                Create Group
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    Columns <ChevronDown />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {table
+                    .getAllColumns()
+                    .filter((column) => column.getCanHide())
+                    .map((column) => {
+                      return (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.id}
+                        </DropdownMenuCheckboxItem>
+                      );
+                    })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           {loadingGroups ? (
@@ -244,14 +258,21 @@ function CreatedGroups() {
               <Spinner variant="ellipsis" />
             </div>
           ) : (
-            <div className="overflow-hidden rounded-md border animate-fade-down animate-once animate-ease-in-out">
-              <Table>
+            <div className="w-full overflow-x-auto rounded-md border animate-fade-down animate-once animate-ease-in-out">
+              <Table className="table-fixed">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
-                          <TableHead key={header.id}>
+                          <TableHead
+                            key={header.id}
+                            className={
+                              header.column.id === "description"
+                                ? "break-words"
+                                : ""
+                            }
+                          >
                             {header.isPlaceholder
                               ? null
                               : flexRender(
@@ -272,7 +293,14 @@ function CreatedGroups() {
                         data-state={row.getIsSelected() && "selected"}
                       >
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="animate-fade-down animate-once animate-ease-in-out">
+                          <TableCell
+                            key={cell.id}
+                            className={`animate-fade-down animate-once animate-ease-in-out ${
+                              cell.column.id === "description"
+                                ? "break-words"
+                                : ""
+                            }`}
+                          >
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()

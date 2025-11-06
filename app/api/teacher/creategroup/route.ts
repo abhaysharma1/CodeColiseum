@@ -4,81 +4,152 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const reqbody = await request.json();
-  const { groupName, description, emails, creatorId } = reqbody;
+  try {
+    const reqbody = await request.json();
+    const { groupName, description, emails, allowJoinByLink } = reqbody;
 
-  const session = await auth.api.getSession({
-    headers: await headers(), // you need to pass the headers object.
-  });
+    // Validate required fields
+    if (!groupName || !description || !emails || !Array.isArray(emails)) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
 
-  if (!session) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+    const session = await auth.api.getSession({
+      headers: await headers(), // you need to pass the headers object.
+    });
 
-  if (session.user.role != "TEACHER") {
-    return NextResponse.json({ error: "Not Authorized" }, { status: 403 });
-  }
+    if (!session) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-  const groupRedudancyCheck = await prisma.group.findFirst({
-    where: {
-      name: groupName,
-      creatorId: session.user.id,
-    },
-  });
+    if (session.user.role != "TEACHER") {
+      return NextResponse.json({ error: "Not Authorized" }, { status: 403 });
+    }
 
-  if (groupRedudancyCheck?.id) {
-    return NextResponse.json(
-      { error: "Group with same name already exists" },
-      { status: 409 }
-    );
-  }
+    const groupRedudancyCheck = await prisma.group.findFirst({
+      where: {
+        name: groupName,
+        creatorId: session.user.id,
+      },
+    });
 
-  const newGroup = await prisma.group.create({
-    data: {
-      name: groupName,
-      description: description,
-      creatorId: session.user.id,
-    },
-  });
+    if (groupRedudancyCheck?.id) {
+      return NextResponse.json(
+        { error: "Group with same name already exists" },
+        { status: 409 }
+      );
+    }
 
-  const notFoundMembers = <string[]>[];
-  const notStudents = <string[]>[];
+    const newGroup = await prisma.group.create({
+      data: {
+        name: groupName,
+        description: description,
+        creatorId: session.user.id,
+        joinByLink: allowJoinByLink,
+      },
+    });
 
-  await Promise.all(
-    emails.map(async (email:string) => {
-      const user = await prisma.user.findFirst({ where: { email } });
+    // Filter out empty emails and trim whitespace
+    const validEmails = emails
+      .map((email: string) => email.trim())
+      .filter((email: string) => email.length > 0);
 
-      if (!user) {
+    const notFoundMembers: string[] = [];
+    const notStudents: string[] = [];
+    const alreadyMembers: string[] = [];
+
+    // Fetch all users at once (more efficient)
+    const users = await prisma.user.findMany({
+      where: {
+        email: {
+          in: validEmails,
+        },
+      },
+    });
+
+    // Create a map for quick lookup
+    const userMap = new Map(users.map((user) => [user.email, user]));
+
+    // Check which emails weren't found
+    validEmails.forEach((email: string) => {
+      if (!userMap.has(email)) {
         notFoundMembers.push(email);
-        return;
       }
+    });
 
+    // Filter students and check for existing memberships
+    const studentsToAdd = users.filter((user) => {
       if (user.role === "TEACHER") {
-        notStudents.push(email);
-        return;
+        notStudents.push(user.email);
+        return false;
       }
+      return true;
+    });
 
+    // Check for existing group memberships
+    const existingMembers = await prisma.groupMember.findMany({
+      where: {
+        groupId: newGroup.id,
+        studentId: {
+          in: studentsToAdd.map((user) => user.id),
+        },
+      },
+      include: {
+        student: true,
+      },
+    });
+
+    const existingMemberIds = new Set(
+      existingMembers.map((member) => member.studentId)
+    );
+
+    existingMembers.forEach((member) => {
+      alreadyMembers.push(member.student.email);
+    });
+
+    // Filter out students who are already members
+    const newStudents = studentsToAdd.filter(
+      (user) => !existingMemberIds.has(user.id)
+    );
+
+    // Batch create all group members in a single transaction
+    if (newStudents.length > 0) {
       await prisma.$transaction([
-        prisma.groupMember.create({
-          data: {
+        prisma.groupMember.createMany({
+          data: newStudents.map((user) => ({
             groupId: newGroup.id,
             studentId: user.id,
-          },
+          })),
         }),
         prisma.group.update({
           where: { id: newGroup.id },
           data: {
-            noOfMembers: { increment: 1 },
+            noOfMembers: { increment: newStudents.length },
           },
         }),
       ]);
-    })
-  );
+    }
 
-  console.log(notFoundMembers, notStudents);
+    console.log({ notFoundMembers, notStudents, alreadyMembers });
 
-  return NextResponse.json(
-    { data: { notFoundMembers, notStudents } },
-    { status: 200, statusText: "Group Created Successfully" }
-  );
+    return NextResponse.json(
+      { 
+        data: { 
+          notFoundMembers, 
+          notStudents, 
+          alreadyMembers,
+          addedCount: newStudents.length 
+        } 
+      },
+      { status: 200, statusText: "Group Created Successfully" }
+    );
+  } catch (error) {
+    console.error("Error creating group:", error);
+    return NextResponse.json(
+      { error: "Failed to create group" },
+      { status: 500 }
+    );
+  }
 }
