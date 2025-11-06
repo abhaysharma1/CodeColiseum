@@ -30,10 +30,10 @@ interface runTestCaseType {
       description: string;
     };
   }[];
-  cases:{
-    input:string,
-    output:string
-  }[]
+  cases: {
+    input: string;
+    output: string;
+  }[];
 }
 function QuestionSolvingPageContent() {
   const searchParams = useSearchParams();
@@ -64,6 +64,11 @@ function QuestionSolvingPageContent() {
     }
   };
 
+  useEffect(() => {
+    console.log(runTestCaseResuts);
+  }, [runTestCaseResuts]);
+
+  
   useEffect(() => {
     if (descriptionData[0]?.id) {
       setLoadingDetails(false);

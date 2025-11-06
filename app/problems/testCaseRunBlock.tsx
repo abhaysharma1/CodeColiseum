@@ -49,12 +49,19 @@ function TestCaseRunBlock({
           <Card>
             <CardHeader>
               <CardTitle>Test {index + 1}</CardTitle>
-              <CardDescription>
-                {item.status.description === "Accepted" ? (
-                  <span className="text-green-600">Accepted</span>
-                ) : (
-                  <span className="text-red-600">Failed</span>
-                )}{" "}
+              <CardDescription className="flex justify-between">
+                <div>
+                  Time taken: {item.time} ms
+                  <br />
+                  Memory used: {item.memory} mb
+                </div>
+                <div>
+                  {item.status.description === "Accepted" ? (
+                    <span className="text-green-600">Accepted</span>
+                  ) : (
+                    <span className="text-red-600">Failed</span>
+                  )}
+                </div>
               </CardDescription>
             </CardHeader>
             <CardContent>

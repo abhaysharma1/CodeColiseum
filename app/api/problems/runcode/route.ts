@@ -29,7 +29,8 @@ const getHeaders = () => {
   if (process.env.JUDGE0_MODE === "rapidapi") {
     return {
       "x-rapidapi-key": process.env.RAPIDAPI_KEY || "",
-      "x-rapidapi-host": process.env.RAPIDAPI_HOST || "judge0-ce.p.rapidapi.com",
+      "x-rapidapi-host":
+        process.env.RAPIDAPI_HOST || "judge0-ce.p.rapidapi.com",
     };
   }
   return {};
@@ -80,12 +81,21 @@ export async function POST(request: NextRequest) {
     // 🌍 Choose the correct Judge0 domain
     const JUDGE0_DOMAIN = process.env.JUDGE0_DOMAIN;
 
+
     // 📨 Submit all test cases
     const batchResponse = await axios.post(
       `${JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
       { submissions },
-      { headers: getHeaders() }
+      {
+        headers: getHeaders(),
+        params: {
+          base64_encoded: "false",
+          wait: "false",
+          fields: "*",
+        },
+      }
     );
+
 
     const tokens = (batchResponse.data as any[]).map((item: any) => item.token);
 
@@ -120,19 +130,18 @@ export async function POST(request: NextRequest) {
       throw new Error(`Submission ${token} timed out`);
     };
 
+
     // 🔁 Poll all submissions concurrently
     const responses = await Promise.all(
       tokens.map((token: string) => pollSubmission(token))
     );
+
 
     const reply = { responses, cases };
 
     return NextResponse.json(reply, { status: 200 });
   } catch (error: any) {
     console.error("Error running code:", error.response?.data || error.message);
-    return NextResponse.json(
-      { error: "Failed to run code" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to run code" }, { status: 500 });
   }
 }
