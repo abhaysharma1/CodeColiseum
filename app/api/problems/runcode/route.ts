@@ -24,6 +24,17 @@ interface JudgeResponse {
   };
 }
 
+// 🧠 Utility: build headers dynamically based on environment
+const getHeaders = () => {
+  if (process.env.JUDGE0_MODE === "rapidapi") {
+    return {
+      "x-rapidapi-key": process.env.RAPIDAPI_KEY || "",
+      "x-rapidapi-host": process.env.RAPIDAPI_HOST || "judge0-ce.p.rapidapi.com",
+    };
+  }
+  return {};
+};
+
 export async function POST(request: NextRequest) {
   try {
     const reqbody = await request.json();
@@ -66,21 +77,33 @@ export async function POST(request: NextRequest) {
       expected_output: item.output,
     }));
 
+    // 🌍 Choose the correct Judge0 domain
+    const JUDGE0_DOMAIN = process.env.JUDGE0_DOMAIN;
+
+    // 📨 Submit all test cases
     const batchResponse = await axios.post(
-      `${process.env.JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
-      { submissions: submissions }
+      `${JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
+      { submissions },
+      { headers: getHeaders() }
     );
 
     const tokens = (batchResponse.data as any[]).map((item: any) => item.token);
 
-    // Poll for results
+    // ⏳ Poll function with environment-aware headers
     const pollSubmission = async (token: string): Promise<JudgeResponse> => {
       let attempts = 0;
-      const maxAttempts = 30; // Max 15 seconds (30 * 500ms)
+      const maxAttempts = 30; // ~15 seconds (30 * 500ms)
 
       while (attempts < maxAttempts) {
         const statusResponse = await axios.get(
-          `${process.env.JUDGE0_DOMAIN}/submissions/${token}?base64_encoded=false`
+          `${JUDGE0_DOMAIN}/submissions/${token}`,
+          {
+            params: {
+              base64_encoded: false,
+              fields: "*",
+            },
+            headers: getHeaders(),
+          }
         );
 
         const result = statusResponse.data as JudgeResponse;
@@ -90,7 +113,6 @@ export async function POST(request: NextRequest) {
           return result;
         }
 
-        // Wait 500ms before checking again
         await new Promise((resolve) => setTimeout(resolve, 500));
         attempts++;
       }
@@ -98,17 +120,19 @@ export async function POST(request: NextRequest) {
       throw new Error(`Submission ${token} timed out`);
     };
 
-    // Poll all submissions in parallel
+    // 🔁 Poll all submissions concurrently
     const responses = await Promise.all(
       tokens.map((token: string) => pollSubmission(token))
     );
 
-
-    const reply = { responses: responses, cases: cases };
+    const reply = { responses, cases };
 
     return NextResponse.json(reply, { status: 200 });
-  } catch (error) {
-    console.error("Error running code:", error);
-    return NextResponse.json({ error: "Failed to run code" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Error running code:", error.response?.data || error.message);
+    return NextResponse.json(
+      { error: "Failed to run code" },
+      { status: 500 }
+    );
   }
 }

@@ -7,6 +7,7 @@ import { LoginForm } from "@/components/login-form";
 import { useState } from "react";
 import VerifyEmailForm from "@/components/verifyEmailForm";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [showVerifyBox, setShowVerifyBox] = useState(false);
@@ -31,7 +32,7 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="bg-muted relative hidden lg:block">
-          <img
+          <Image
             src="/images/Facebook-Movie-Hacking-Scene-Upscaled.jpg"
             alt="Image"
             className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6] dark:grayscale"
