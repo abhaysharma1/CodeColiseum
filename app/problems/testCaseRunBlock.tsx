@@ -51,7 +51,7 @@ function TestCaseRunBlock({
               <CardTitle>Test {index + 1}</CardTitle>
               <CardDescription className="flex justify-between">
                 <div>
-                  Time taken: {item.time} ms
+                  Time taken: {item.time} s
                   <br />
                   Memory used: {item.memory} kb
                 </div>
