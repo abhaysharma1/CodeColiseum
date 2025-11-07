@@ -49,7 +49,7 @@ function TestCases({ questionId }: { questionId: string }) {
   }, [questionId]);
 
   return (
-    <div className="mt-7 ml-3 flex flex-col h-full">
+    <div className="mt-7 flex flex-col h-full">
       <div className=" flex flex-col h-full">
         {loading ? (
           <div className="w-full flex flex-col justify-center items-center">
