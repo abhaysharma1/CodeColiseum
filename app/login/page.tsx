@@ -33,6 +33,7 @@ export default function LoginPage() {
         </div>
         <div className="bg-muted relative hidden lg:block">
           <Image
+            fill={true}
             src="/images/Facebook-Movie-Hacking-Scene-Upscaled.jpg"
             alt="Image"
             className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.6] dark:grayscale"

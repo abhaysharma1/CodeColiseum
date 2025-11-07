@@ -7,6 +7,8 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Navbar01 } from "@/components/ui/shadcn-io/navbar";
+import { runTestCaseType, submitTestCaseType } from "./interface";
+import { AuthProvider } from "@/context/authcontext";
 
 interface descriptionData {
   id: string;
@@ -16,32 +18,16 @@ interface descriptionData {
   title: string;
 }
 
-interface runTestCaseType {
-  responses: {
-    stdout: string | null;
-    time: string | null;
-    memory: number | null;
-    stderr: string | null;
-    token: string;
-    compile_output: string | null;
-    message: string | null;
-    status: {
-      id: number;
-      description: string;
-    };
-  }[];
-  cases: {
-    input: string;
-    output: string;
-  }[];
-}
 function QuestionSolvingPageContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const [loadingDetails, setLoadingDetails] = useState(true);
   const router = useRouter();
 
-  const [runTestCaseResuts, setRunTestCaseResuts] = useState<runTestCaseType>();
+  const [runTestCaseResults, setRunTestCaseResults] =
+    useState<runTestCaseType>();
+  const [submitTestCaseResults, setSubmitTestCaseResults] =
+    useState<submitTestCaseType>();
 
   const [descriptionData, setDescriptionData] = useState<descriptionData[]>([]);
 
@@ -65,11 +51,6 @@ function QuestionSolvingPageContent() {
   };
 
   useEffect(() => {
-    console.log(runTestCaseResuts);
-  }, [runTestCaseResuts]);
-
-  
-  useEffect(() => {
     if (descriptionData[0]?.id) {
       setLoadingDetails(false);
     }
@@ -82,20 +63,24 @@ function QuestionSolvingPageContent() {
   return (
     <div>
       <div>
-        <Navbar01 />
+        <AuthProvider>
+          <Navbar01 />
+        </AuthProvider>
       </div>
       <div className="flex justify-center">
         <div>
           <DetailsBlock
             data={descriptionData || []}
             loadingDetails={loadingDetails}
-            runTestCaseResuts={runTestCaseResuts}
+            runTestCaseResults={runTestCaseResults}
+            submitTestCaseResults={submitTestCaseResults}
           />
         </div>
         <div>
           <CodingBlock
             questionId={id ?? ""}
-            setRunTestCaseResuts={setRunTestCaseResuts}
+            setRunTestCaseResults={setRunTestCaseResults}
+            setSubmitTestCaseResults={setSubmitTestCaseResults}
           />
         </div>
       </div>

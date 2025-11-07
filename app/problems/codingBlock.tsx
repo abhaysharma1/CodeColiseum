@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { getLanguageId } from "@/utils/getLanguageId";
+import { runTestCaseType, submitTestCaseType } from "./interface";
 
 interface sentCode {
   questionId: string;
@@ -26,75 +27,18 @@ interface sentCode {
   code: string;
 }
 
-interface runTestCaseType {
-  responses: {
-    stdout: string | null;
-    time: string | null;
-    memory: number | null;
-    stderr: string | null;
-    token: string;
-    compile_output: string | null;
-    message: string | null;
-    status: {
-      id: number;
-      description: string;
-    };
-  }[];
-  cases: {
-    input: string;
-    output: string;
-  }[];
-}
-
 const availableLanguages = [
-  {
-    id: 50,
-    name: "C",
-    monacoLang: "c",
-  },
-  {
-    id: 54,
-    name: "C++",
-    monacoLang: "cpp",
-  },
-  {
-    id: 51,
-    name: "C#",
-    monacoLang: "csharp",
-  },
-  {
-    id: 60,
-    name: "Go",
-    monacoLang: "go",
-  },
-  {
-    id: 62,
-    name: "Java",
-    monacoLang: "java",
-  },
-  {
-    id: 63,
-    name: "JavaScript",
-    monacoLang: "javascript",
-  },
-  {
-    id: 71,
-    name: "Python",
-    monacoLang: "python",
-  },
-  {
-    id: 73,
-    name: "Rust",
-    monacoLang: "rust",
-  },
-  {
-    id: 74,
-    name: "TypeScript",
-    monacoLang: "typescript",
-  },
+  { id: 50, name: "C", monacoLang: "c" },
+  { id: 54, name: "C++", monacoLang: "cpp" },
+  { id: 51, name: "C#", monacoLang: "csharp" },
+  { id: 60, name: "Go", monacoLang: "go" },
+  { id: 62, name: "Java", monacoLang: "java" },
+  { id: 63, name: "JavaScript", monacoLang: "javascript" },
+  { id: 71, name: "Python", monacoLang: "python" },
+  { id: 73, name: "Rust", monacoLang: "rust" },
+  { id: 74, name: "TypeScript", monacoLang: "typescript" },
 ];
 
-// Theme names must match exactly with the JSON files in monaco-themes
 const themeFileMap: Record<string, string> = {
   Active4D: "Active4D",
   "All Hallows Eve": "All Hallows Eve",
@@ -143,15 +87,17 @@ const themeFileMap: Record<string, string> = {
 
 const availableThemes = Object.keys(themeFileMap);
 
+interface CodingBlockProps {
+  questionId: string;
+  setRunTestCaseResults: (results: runTestCaseType) => void;
+  setSubmitTestCaseResults: (data: submitTestCaseType) => void;
+}
+
 function CodingBlock({
   questionId,
-  setRunTestCaseResuts,
-}: {
-  questionId: string;
-  setRunTestCaseResuts: React.Dispatch<
-    React.SetStateAction<runTestCaseType | undefined>
-  >;
-}) {
+  setRunTestCaseResults,
+  setSubmitTestCaseResults,
+}: CodingBlockProps) {
   const [editorTheme, setEditorTheme] = useState("Sunburst");
   const [code, setCode] = useState<string>("");
   const [language, setLanguage] = useState("cpp");
@@ -160,6 +106,8 @@ function CodingBlock({
   const [running, setRunning] = useState(false);
   const [themeList, setThemeList] = useState<string[]>();
   const [monacoInstance, setMonacoInstance] = useState<any>(null);
+  const [editorInstance, setEditorInstance] = useState<any>(null);
+
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -174,10 +122,6 @@ function CodingBlock({
 
       try {
         const fileName = themeFileMap[themeName];
-        if (!fileName) {
-          throw new Error(`Theme "${themeName}" not found in theme mapping`);
-        }
-
         const themeData = await import(`monaco-themes/themes/${fileName}.json`);
         const safeThemeName = themeName
           .toLowerCase()
@@ -195,7 +139,9 @@ function CodingBlock({
     loadTheme(editorTheme);
   }, [editorTheme, monacoInstance]);
 
-  const handleEditorDidMount: OnMount = (editor, monaco) => {
+  const handleEditorDidMount: OnMount = async (editor, monaco) => {
+    setEditorInstance(editor);
+
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: true,
       noSyntaxValidation: true,
@@ -214,25 +160,59 @@ function CodingBlock({
       return;
     }
 
-    const languageId = getLanguageId(language) ?? 54; // C++ as Fallback
+    const languageId = getLanguageId(language) ?? 54;
 
     const sentData: sentCode = {
-      questionId: questionId,
-      languageId: languageId,
-      code: code,
+      questionId,
+      languageId,
+      code,
     };
 
     try {
       const response = await axios.post("/api/problems/runcode", sentData);
-      setRunTestCaseResuts(response.data as runTestCaseType);
+      setRunTestCaseResults(response.data as runTestCaseType);
       if (response.status > 400) {
-        toast.error("Couldn't run you code");
+        toast.error("Couldn't run your code");
         toast.error(response.statusText);
       }
     } catch (error) {
       console.log(error);
     } finally {
       setRunning(false);
+    }
+  };
+
+  const onSubmit = async () => {
+    setSubmitting(true);
+    if (code.length < 1 || code == "//Example Code") {
+      toast.error("Enter Some Code to be Submitted");
+      return;
+    }
+
+    try {
+      const languageId = getLanguageId(language) ?? 54;
+
+      const submitCode: sentCode = {
+        questionId,
+        languageId,
+        code,
+      };
+
+      const submitCodeResponse = await axios.post(
+        "/api/problems/submitcode",
+        submitCode
+      );
+
+      if (submitCodeResponse.status == 401) {
+        toast.error("Please Login before you can do a Submission");
+      } else {
+        setSubmitTestCaseResults(submitCodeResponse.data as submitTestCaseType);
+      }
+    } catch (error) {
+      console.log(error);
+      // toast.error(error as string);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -258,15 +238,12 @@ function CodingBlock({
               onChange={(event) => setCode(event ?? "")}
               theme={editorTheme}
               loading={<Spinner variant="ring" />}
-              beforeMount={setMonacoInstance}
+              beforeMount={(e) => setMonacoInstance(e)}
               options={{
                 formatOnType: true,
                 cursorBlinking: "expand",
                 codeLens: false,
-                padding: {
-                  bottom: 10,
-                  top: 20,
-                },
+                padding: { bottom: 10, top: 20 },
                 snippetSuggestions: "none",
                 smoothScrolling: true,
                 wordBasedSuggestions: "off",
@@ -274,102 +251,106 @@ function CodingBlock({
                 suggestOnTriggerCharacters: false,
                 acceptSuggestionOnEnter: "off",
                 tabCompletion: "off",
-                inlineSuggest: {
-                  enabled: false,
-                },
+                inlineSuggest: { enabled: false },
                 showFoldingControls: "always",
                 quickSuggestionsDelay: 0,
-                parameterHints: {
-                  enabled: false,
-                },
-                hover: {
-                  enabled: false,
-                },
+                parameterHints: { enabled: false },
+                hover: { enabled: false },
                 glyphMargin: false,
               }}
               onMount={handleEditorDidMount}
             />
           </div>
+
           <div className="w-full h-12 flex-shrink-0 bg-background flex justify-between items-center px-3 gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="h-[70%]" asChild>
-                <Button variant="outline">
-                  <IoMdSettings />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="">
-                <DropdownMenuItem
-                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                >
-                  Switch Website Theme
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <div className="flex justify-between w-full mr-2">
-                      <span>Editor Theme</span>
-                      <span className="ml-2 text-muted-foreground">
-                        {editorTheme}
-                      </span>
-                    </div>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="max-h-[400px] overflow-y-auto">
-                    {themeList?.map((item) => (
-                      <DropdownMenuItem
-                        key={item}
-                        onClick={() => setEditorTheme(item)}
-                      >
-                        {item
-                          .split("-")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )
-                          .join(" ")}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <div className="flex justify-between w-full mr-2">
-                      <span>Language</span>
-                      <span className="ml-2 text-muted-foreground">
-                        {
-                          availableLanguages.find(
-                            (lang) => lang.monacoLang === language
-                          )?.name
-                        }
-                      </span>
-                    </div>
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    {availableLanguages.map((item) => (
-                      <DropdownMenuItem
-                        key={item.id}
-                        onClick={() => setLanguage(item.monacoLang)}
-                      >
-                        {item.name.at(0)?.toUpperCase() +
-                          item.name.slice(1).toLowerCase()}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="h-[70%]" asChild>
+                  <Button variant="outline">
+                    <IoMdSettings />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setTheme(theme === "light" ? "dark" : "light")
+                    }
+                  >
+                    Switch Website Theme
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <div className="flex justify-between w-full mr-2">
+                        <span>Editor Theme</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {editorTheme}
+                        </span>
+                      </div>
+                    </DropdownMenuSubTrigger>
+
+                    <DropdownMenuSubContent className="max-h-[400px] overflow-y-auto">
+                      {themeList?.map((item) => (
+                        <DropdownMenuItem
+                          key={item}
+                          onClick={() => setEditorTheme(item)}
+                        >
+                          {item
+                            .split("-")
+                            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                            .join(" ")}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <div className="flex justify-between w-full mr-2">
+                        <span>Language</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {
+                            availableLanguages.find(
+                              (l) => l.monacoLang === language
+                            )?.name
+                          }
+                        </span>
+                      </div>
+                    </DropdownMenuSubTrigger>
+
+                    <DropdownMenuSubContent>
+                      {availableLanguages.map((item) => (
+                        <DropdownMenuItem
+                          key={item.id}
+                          onClick={() => setLanguage(item.monacoLang)}
+                        >
+                          {item.name.charAt(0).toUpperCase() +
+                            item.name.slice(1).toLowerCase()}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
             <ButtonGroup className="h-[70%]">
               <Button
                 disabled={running}
                 variant="outline"
                 className="h-[100%]"
-                onClick={() => onRun()}
+                onClick={onRun}
               >
                 {running ? "Running" : "Run"}
               </Button>
+
               <Button
                 disabled={submitting}
                 variant="default"
                 className="h-[100%]"
+                onClick={onSubmit}
               >
                 {submitting ? "Submitting" : "Submit"}
               </Button>

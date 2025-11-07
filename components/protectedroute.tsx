@@ -9,12 +9,13 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { user, loading, error } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {   // redirect if not logged in
+  useEffect(() => {
+    // redirect if not logged in
     if (!user?.id && !loading) {
       toast.error("Not Logged In Redirecting To Login Page...");
       router.replace("/login");
     }
-  }, [user,loading]);
+  }, [user, loading]);
 
   if (!user && !loading) {
     return (
@@ -29,12 +30,11 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
   if (!user && loading) {
     return (
-      <div className=" w-screen h-screen bg-background flex justify-center items-center">
+      <div className=" w-[100vw] h-[100vh] bg-background flex justify-center items-center">
         <Spinner variant="ring" size={50} />
       </div>
     );
   }
-
 
   if (user && !error) {
     return children;

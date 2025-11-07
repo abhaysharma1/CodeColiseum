@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import TestCases from "./testCases";
 import TestCaseRunBlock from "./testCaseRunBlock";
 import SubmitCode from "./submitCode";
+import { runTestCaseType, submitTestCaseType } from "./interface";
 
 interface descriptionData {
   id: string;
@@ -16,34 +17,16 @@ interface descriptionData {
   title: string;
 }
 
-interface runTestCaseType {
-  responses: {
-    stdout: string | null;
-    time: string | null;
-    memory: number | null;
-    stderr: string | null;
-    token: string;
-    compile_output: string | null;
-    message: string | null;
-    status: {
-      id: number;
-      description: string;
-    };
-  }[];
-  cases: {
-    input: string;
-    output: string;
-  }[];
-}
-
 function DetailsBlock({
   data,
   loadingDetails,
-  runTestCaseResuts,
+  runTestCaseResults,
+  submitTestCaseResults,
 }: {
   data: descriptionData[];
   loadingDetails: boolean;
-  runTestCaseResuts: runTestCaseType | undefined;
+  runTestCaseResults: runTestCaseType | undefined;
+  submitTestCaseResults: submitTestCaseType | undefined;
 }) {
   return (
     <div>
@@ -87,10 +70,10 @@ function DetailsBlock({
             <TestCases questionId={data[0]?.id} />
           </TabsContent>
           <TabsContent value="testcasesrun">
-            <TestCaseRunBlock results={runTestCaseResuts} />
+            <TestCaseRunBlock results={runTestCaseResults} />
           </TabsContent>
           <TabsContent value="submitcode">
-            <SubmitCode />
+            <SubmitCode results={submitTestCaseResults} />
           </TabsContent>
         </Tabs>
       </div>

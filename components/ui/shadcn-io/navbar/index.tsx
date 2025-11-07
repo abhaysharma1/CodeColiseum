@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/authcontext";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -130,6 +133,8 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
 
+    const { user } = useAuth();
+
     const router = useRouter();
 
     useEffect(() => {
@@ -214,34 +219,30 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
             )}
             {/* Main nav */}
             <div className="flex items-center gap-6">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.replace("/dashboard");
-                }}
-                className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors cursor-pointer"
-              >
-                <div className="text-2xl">{logo}</div>
-                <span className="hidden font-bold text-xl sm:inline-block">
-                  CodeColiseum
-                </span>
-              </button>
+              <Link href={"/dashboard"}>
+                <button
+                  className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors cursor-pointer"
+                >
+                  <div className="text-2xl">{logo}</div>
+                  <span className="hidden font-bold text-xl sm:inline-block">
+                    CodeColiseum
+                  </span>
+                </button>
+              </Link>
               {/* Navigation menu */}
               {!isMobile && (
                 <NavigationMenu className="flex">
                   <NavigationMenuList className="gap-1">
                     <NavigationMenuItem>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          router.replace("/dashboard");
-                        }}
-                        className={cn(
-                          "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer no-underline text-foreground/80"
-                        )}
-                      >
-                        Problems
-                      </button>
+                      <Link href={`/problems/list`}>
+                        <button
+                          className={cn(
+                            "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer no-underline text-foreground/80"
+                          )}
+                        >
+                          Problems
+                        </button>
+                      </Link>
                     </NavigationMenuItem>{" "}
                   </NavigationMenuList>
                 </NavigationMenu>
@@ -249,29 +250,34 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
             </div>
           </div>
           {/* Right side */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-              onClick={(e) => {
-                e.preventDefault();
-                if (onSignInClick) onSignInClick();
-              }}
-            >
-              {signInText}
-            </Button>
-            <Button
-              size="sm"
-              className="text-sm font-medium px-4 h-9 rounded-md shadow-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                if (onCtaClick) onCtaClick();
-              }}
-            >
-              {ctaText}
-            </Button>
-          </div>
+          {!user?.id ? (
+            <div className="flex items-center gap-3">
+              <Link href={"/login"}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  Sign In
+                </Button>
+              </Link>
+              <Link href={"/signup"}>
+                <Button
+                  size="sm"
+                  className="text-sm font-medium px-4 h-9 rounded-md shadow-sm"
+                >
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <Avatar>
+                <AvatarImage src={user.image as string} />
+                <AvatarFallback>CC</AvatarFallback>
+              </Avatar>
+            </div>
+          )}
         </div>
       </header>
     );

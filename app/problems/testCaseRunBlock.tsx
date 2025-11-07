@@ -34,26 +34,22 @@ function TestCaseRunBlock({
 }: {
   results: runTestCaseType | undefined;
 }) {
-  useEffect(() => {
-    console.log(results);
-  }, [results]);
-
   if (!results) {
-    return <div className="mt-5">Please Run Your Code to See Results</div>;
+    return <div className="mt-5 p-4">Please Run Your Code to See Results</div>;
   }
 
   return (
-    <div className="mt-5">
+    <div className="">
       {results?.responses.map((item, index) => (
-        <div key={item.token} className="my-4">
+        <div key={item.token} className="my-4 animate-fade-down animate-once animate-delay-[10ms]">
           <Card>
             <CardHeader>
               <CardTitle>Test {index + 1}</CardTitle>
               <CardDescription className="flex justify-between">
                 <div>
-                  Time taken: {item.time} s
+                  Time taken: {item.time} sec
                   <br />
-                  Memory used: {item.memory} kb
+                  Memory used: {item.memory && item.memory / 1024} mb
                 </div>
                 <div>
                   {item.status.description === "Accepted" ? (
