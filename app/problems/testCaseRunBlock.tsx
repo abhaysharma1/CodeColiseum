@@ -35,21 +35,27 @@ function TestCaseRunBlock({
   results: runTestCaseType | undefined;
 }) {
   if (!results) {
-    return <div className="mt-5 p-4">Please Run Your Code to See Results</div>;
+    return <div className="p-4">Please Run Your Code to See Results</div>;
   }
 
   return (
     <div className="">
       {results?.responses.map((item, index) => (
-        <div key={item.token} className="my-4 animate-fade-down animate-once animate-delay-[10ms]">
+        <div
+          key={item.token}
+          className="my-4 animate-fade-down animate-once animate-delay-[10ms]"
+        >
           <Card>
             <CardHeader>
               <CardTitle>Test {index + 1}</CardTitle>
               <CardDescription className="flex justify-between">
                 <div>
-                  Time taken: {item.time} sec
+                  Time taken: {Number(item.time).toFixed(2)} sec
                   <br />
-                  Memory used: {item.memory && item.memory / 1024} mb
+                  Memory used: {(item.memory && item.memory / 1024)?.toFixed(
+                    2
+                  )}{" "}
+                  mb
                 </div>
                 <div>
                   {item.status.description === "Accepted" ? (
