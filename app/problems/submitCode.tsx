@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { submitTestCaseType } from "./interface";
 import { CasesPassedChart } from "@/components/casesPassedChart";
 
 function SubmitCode({ results }: { results: submitTestCaseType | undefined }) {
+
   if (!results || !results.noOfPassedCases) {
     return (
       <div className="p-4">

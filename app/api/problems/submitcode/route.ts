@@ -194,7 +194,9 @@ export async function POST(request: NextRequest) {
       if (result.status.id > 2) {
         totalMemoryUsed += result.memory;
         totalTimeTaken += Number(result.time);
-        noOfPassedCases++;
+        if (result.status.description === "Accepted") {
+          noOfPassedCases++;
+        }
         return result;
       }
 

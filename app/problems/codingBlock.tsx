@@ -183,11 +183,12 @@ function CodingBlock({
   };
 
   const onSubmit = async () => {
-    setSubmitting(true);
     if (code.length < 1 || code == "//Example Code") {
       toast.error("Enter Some Code to be Submitted");
       return;
     }
+
+    setSubmitting(true);
 
     try {
       const languageId = getLanguageId(language) ?? 54;
