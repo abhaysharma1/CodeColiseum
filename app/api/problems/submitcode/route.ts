@@ -35,8 +35,9 @@ interface submitResponseType {
   };
   noOfPassedCases: number;
   totalCases: number;
-  totalMemoryUsed: number;
-  totalTimeTaken: number;
+  totalMemoryUsed?: number;
+  totalTimeTaken?: number;
+  status: string;
 }
 
 const getHeaders = () => {
@@ -103,6 +104,13 @@ const getLanguageNameById = (languageId: number) => {
   return languageObj[0].name;
 };
 
+interface PollResult {
+  result: JudgeResponse;
+  passed: boolean;
+  token: string;
+  stdout?: string;
+}
+
 export async function POST(request: NextRequest) {
   const { questionId, languageId, code } = await request.json();
   const session = await auth.api.getSession({
@@ -154,112 +162,131 @@ export async function POST(request: NextRequest) {
 
   const JUDGE0_DOMAIN = process.env.JUDGE0_DOMAIN;
 
-  const batchResponse = await axios.post(
-    `${JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
-    { submissions },
-    {
-      headers: getHeaders(),
-      params: {
-        base64_encoded: "false",
-        wait: "false",
-        fields: "*",
-      },
-    }
-  );
-
-  const tokens = (batchResponse.data as any[]).map((item: any) => item.token);
-
-  let noOfPassedCases = 0;
-  let totalMemoryUsed = 0;
-  let totalTimeTaken = 0;
-
-  const pollSubmission = async (token: string) => {
-    const maxAttempts = 40;
-    let attempts = 0;
-
-    while (attempts < maxAttempts) {
-      const statusResponse = await axios.get(
-        `${JUDGE0_DOMAIN}/submissions/${token}`,
-        {
-          params: {
-            base64_encoded: false,
-            fields: "*",
-          },
-          headers: getHeaders(),
-        }
-      );
-
-      const result = statusResponse.data as JudgeResponse;
-
-      if (result.status.id > 2) {
-        totalMemoryUsed += result.memory;
-        totalTimeTaken += Number(result.time);
-        if (result.status.description === "Accepted") {
-          noOfPassedCases++;
-        }
-        return result;
+  try {
+    const batchResponse = await axios.post(
+      `${JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
+      { submissions },
+      {
+        headers: getHeaders(),
+        params: {
+          base64_encoded: "false",
+          wait: "false",
+          fields: "*",
+        },
       }
+    );
 
-      if (result.status.description == "Failed") {
-        const languageName = getLanguageNameById(languageId);
-        await prisma.selfSubmission.create({
-          data: {
-            code: code,
-            language: languageName,
-            noOfPassedCases: noOfPassedCases,
-            failedCase: submissions[tokens.indexOf(token)],
+    const tokens = (batchResponse.data as any[]).map((item: any) => item.token);
 
-            userId: session?.user.id,
-            problemId: questionId,
-          },
-        });
+    const pollSubmission = async (token: string): Promise<PollResult> => {
+      const maxAttempts = 40;
+      let attempts = 0;
 
-        const failedCaseResponse: submitResponseType = {
-          failedCase: submissions[tokens.indexOf(token)],
-          noOfPassedCases: noOfPassedCases,
-          totalCases: cases.length,
-          totalMemoryUsed: totalMemoryUsed,
-          totalTimeTaken: totalTimeTaken,
-        };
-
-        return NextResponse.json(
-          { failedCaseResponse },
-          { status: 201, statusText: "A Test Case Failed" }
+      while (attempts < maxAttempts) {
+        const statusResponse = await axios.get(
+          `${JUDGE0_DOMAIN}/submissions/${token}`,
+          {
+            params: {
+              base64_encoded: false,
+              fields: "*",
+            },
+            headers: getHeaders(),
+          }
         );
+
+        const result = statusResponse.data as JudgeResponse;
+
+        if (result.status.id > 2) {
+          const passed = result.status.description === "Accepted";
+          return { result, passed, token };
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        attempts++;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      attempts++;
+      throw new Error(`Submission ${token} timed out`);
+    };
+
+    // Execute test cases sequentially, stopping at first failure
+    let noOfPassedCases = 0;
+    let totalMemoryUsed = 0;
+    let totalTimeTaken = 0;
+    let firstFailedCase: PollResult | null = null;
+
+    for (let i = 0; i < tokens.length; i++) {
+      const response = await pollSubmission(tokens[i]);
+
+      totalMemoryUsed += response.result.memory;
+      totalTimeTaken += Number(response.result.time);
+
+      if (response.passed) {
+        noOfPassedCases++;
+      } else {
+        firstFailedCase = response;
+        break; // Stop testing remaining cases
+      }
     }
 
-    throw new Error(`Submission ${token} timed out`);
-  };
+    const languageName = getLanguageNameById(languageId);
 
-  const responses = await Promise.all(
-    tokens.map((token: string) => pollSubmission(token))
-  );
+    // If any test case failed
+    if (firstFailedCase) {
+      const failedCase = firstFailedCase as PollResult;
+      const failedTokenIndex = tokens.indexOf(failedCase.token);
+      const failedCaseResponse = {
+        failedCase: submissions[failedTokenIndex],
+        failedCaseExecutionDetails: firstFailedCase.result,
+        noOfPassedCases: noOfPassedCases,
+        totalCases: cases.length,
+        status: "Failed",
+      };
 
-  // Reponses have been received about the code execution, all Test Cases have been passed
+      await prisma.selfSubmission.create({
+        data: {
+          code: code,
+          language: languageName,
+          noOfPassedCases: noOfPassedCases,
+          failedCase: submissions[failedTokenIndex],
+          userId: session.user.id,
+          problemId: questionId,
+        },
+      });
 
-  const successResponse: submitResponseType = {
-    noOfPassedCases: noOfPassedCases,
-    totalCases: cases.length,
-    totalMemoryUsed: totalMemoryUsed,
-    totalTimeTaken: totalTimeTaken,
-  };
+      return NextResponse.json(failedCaseResponse, {
+        status: 200,
+        statusText: "A Test Case Failed",
+      });
+    }
 
-  await prisma.selfSubmission.create({
-    data: {
-      code: code,
-      language: getLanguageNameById(languageId),
+    // All test cases passed
+    const successResponse: submitResponseType = {
       noOfPassedCases: noOfPassedCases,
-      userId: session.user.id,
-      problemId: questionId,
-    },
-  });
+      totalCases: cases.length,
+      totalMemoryUsed: totalMemoryUsed,
+      totalTimeTaken: totalTimeTaken,
+      status: "Passed",
+    };
 
-  return NextResponse.json(successResponse, {
-    status: 201,
-    statusText: "Submission Created Successfully",
-  });
+    await prisma.selfSubmission.create({
+      data: {
+        code: code,
+        language: languageName,
+        noOfPassedCases: noOfPassedCases,
+        userId: session.user.id,
+        problemId: questionId,
+      },
+    });
+
+    return NextResponse.json(successResponse, {
+      status: 201,
+      statusText: "Submission Created Successfully",
+    });
+  } catch (error) {
+    console.error("Error processing submission:", error);
+    return NextResponse.json(
+      { error: "Failed to process submission. Please try again." },
+      { status: 500, statusText: "Internal Server Error" }
+    );
+  }
 }

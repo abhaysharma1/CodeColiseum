@@ -7,8 +7,10 @@ export interface submitTestCaseType {
   };
   noOfPassedCases: number;
   totalCases: number;
-  totalMemoryUsed: number;
-  totalTimeTaken: number;
+  totalMemoryUsed?: number;
+  totalTimeTaken?: number;
+  status: string;
+  failedCaseExecutionDetails?: JudgeResponse;
 }
 
 export interface runTestCaseType {
@@ -29,4 +31,18 @@ export interface runTestCaseType {
     input: string;
     output: string;
   }[];
+}
+
+export interface JudgeResponse {
+  stdout: string | null;
+  time: string;
+  memory: number;
+  stderr: string | null;
+  token: string;
+  compile_output: string | null;
+  message: string | null;
+  status: {
+    id: number;
+    description: string;
+  };
 }

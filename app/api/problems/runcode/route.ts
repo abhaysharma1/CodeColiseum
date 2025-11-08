@@ -1,5 +1,7 @@
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import axios from "axios";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 interface runTestCaseType {
@@ -40,6 +42,16 @@ export async function POST(request: NextRequest) {
   try {
     const reqbody = await request.json();
     const { questionId, languageId, code } = reqbody;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user.id) {
+      return NextResponse.json(
+        { error: "Need to login before you can make a run your code" },
+        { status: 401, statusText: "User Not Logged IN" }
+      );
+    }
 
     const runTestCase: runTestCaseType | null =
       await prisma.runTestCase.findUnique({
@@ -81,7 +93,6 @@ export async function POST(request: NextRequest) {
     // 🌍 Choose the correct Judge0 domain
     const JUDGE0_DOMAIN = process.env.JUDGE0_DOMAIN;
 
-
     // 📨 Submit all test cases
     const batchResponse = await axios.post(
       `${JUDGE0_DOMAIN}/submissions/batch?base64_encoded=false`,
@@ -95,7 +106,6 @@ export async function POST(request: NextRequest) {
         },
       }
     );
-
 
     const tokens = (batchResponse.data as any[]).map((item: any) => item.token);
 
@@ -130,12 +140,10 @@ export async function POST(request: NextRequest) {
       throw new Error(`Submission ${token} timed out`);
     };
 
-
     // 🔁 Poll all submissions concurrently
     const responses = await Promise.all(
       tokens.map((token: string) => pollSubmission(token))
     );
-
 
     const reply = { responses, cases };
 
