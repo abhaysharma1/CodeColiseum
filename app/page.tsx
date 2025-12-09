@@ -22,6 +22,10 @@ import "ldrs/react/Mirage.css"; //
 import TiltedCard from "@/components/titledCard";
 import GlassSurface from "@/components/GlassSurface";
 import GradientText from "@/components/GradientText";
+import { useAuth } from "@/context/authcontext";
+
+import { MdArrowOutward } from "react-icons/md";
+import { Separator } from "@/components/ui/separator";
 
 const navbar = [
   {
@@ -45,6 +49,7 @@ const navbar = [
 export default function Home() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const { user } = useAuth();
 
   React.useEffect(() => {
     setMounted(true);
@@ -101,16 +106,28 @@ export default function Home() {
             </div>
 
             <div className="mr-7 ">
-              <Button className="rounded-2xl mr-2" asChild>
-                <Link href={"/signup"}>SignUp</Link>
-              </Button>
-              <Button
-                className="rounded-2xl text-white"
-                variant={"outline"}
-                asChild
-              >
-                <Link href={"/login"}>Login</Link>
-              </Button>
+              {user ? (
+                <Button
+                  className="rounded-2xl mr-2 text-foreground"
+                  variant={"ghost"}
+                  asChild
+                >
+                  <Link href={"/dashboard"}>Dashboard</Link>
+                </Button>
+              ) : (
+                <div>
+                  <Button className="rounded-2xl mr-2" asChild>
+                    <Link href={"/signup"}>SignUp</Link>
+                  </Button>
+                  <Button
+                    className="rounded-2xl text-white"
+                    variant={"outline"}
+                    asChild
+                  >
+                    <Link href={"/login"}>Login</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -383,16 +400,64 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="w-full flex h-[300px] bg-background mt-5">
-        <div className="h-[300px] w-[60%] flex items-center ">
-          <Image
-            src={theme === "light" ? darkLogo : lightLogo}
-            alt="Logo"
-            className="h-[300px] w-fit"
-          />
+
+      <AnimatedContent
+        distance={150}
+        direction="vertical"
+        reverse={false}
+        duration={1.2}
+        ease="power3.out"
+        initialOpacity={0.2}
+        animateOpacity
+        scale={1.1}
+        threshold={0.2}
+        delay={0}
+      >
+        <div className="w-full flex h-[300px] bg-background mt-5">
+          <div className="h-[300px] w-[60%] flex items-center opacity-80">
+            <Image
+              src={theme === "light" ? darkLogo : lightLogo}
+              alt="Logo"
+              className="h-[300px] w-fit"
+            />
+          </div>
+          <div className="h-[300px] w-[40%] pt-20 px-10 text-foreground/80 flex flex-col gap-2 ">
+            <h1>Made by @Abhay Sharma</h1>
+            <div className="flex items-center gap-2 w-[160px]">
+              <Link
+                href={"https://www.github.com/abhaysharma1"}
+                className="w-fit hover:underline underline-offset-1 flex items-center gap-1"
+                target="_blank"
+              >
+                Github
+                <MdArrowOutward />
+              </Link>
+              <hr className="bg-white/70 w-full"></hr>
+            </div>
+            <div className="flex items-center gap-2 w-[160px]">
+              <Link
+                href={"https://www.linkedin.com/in/abhay-sharma-63b821277/"}
+                className="w-fit hover:underline underline-offset-1 flex items-center gap-1"
+                target="_blank"
+              >
+                LinkedIn
+                <MdArrowOutward />
+              </Link>
+              <hr className="bg-white/70 w-full"></hr>
+            </div>
+            <div className=" flex flex-col w-full h-full mb-4 justify-end">
+              <h1 className="mb-3">
+                The <span className="italic">starry heavens</span> above me and
+                the <span className="italic">moral law</span> within me.
+              </h1>
+              <hr className="bg-white/70 w-full"></hr>
+              <div className="w-full justify-end flex text-xs mt-1">
+                ©Abhay Sharma 2025
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="h-[300px] w-[40%] "></div>
-      </div>
+      </AnimatedContent>
     </div>
   );
 }
