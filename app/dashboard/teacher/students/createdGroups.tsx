@@ -41,6 +41,7 @@ import axios from "axios";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { TbReload } from "react-icons/tb";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export interface StudentGroup {
   id: string; // UUID
@@ -215,14 +216,10 @@ function CreatedGroups() {
             </div>
 
             <div>
-              <Button
-                variant={"default"}
-                onClick={() =>
-                  router.replace("/dashboard/teacher/students/creategroup")
-                }
-                className="mx-2"
-              >
-                Create Group
+              <Button variant={"default"} asChild className="mx-2">
+                <Link href={"/dashboard/teacher/students/creategroup"}>
+                  Create Group
+                </Link>
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

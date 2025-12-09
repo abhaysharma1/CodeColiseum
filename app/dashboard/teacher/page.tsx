@@ -38,6 +38,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
+import Link from "next/link";
 
 const data: incomingData[] = [
   {
@@ -329,12 +330,10 @@ export default function DataTable() {
               />
 
               <div className="">
-                <Button
-                  className="mr-4"
-                  variant="default"
-                  onClick={() => router.replace("/dashboard/teacher/createtest")}
-                >
-                  Create Test
+                <Button className="mr-4" variant="default" asChild>
+                  <Link href={"/dashboard/teacher/createtest"}>
+                    Create Test
+                  </Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

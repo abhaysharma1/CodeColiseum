@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { getLanguageId } from "@/utils/getLanguageId";
+import { MdFormatAlignLeft } from "react-icons/md"
 import { runTestCaseType, submitTestCaseType } from "./interface";
 
 interface sentCode {
@@ -141,6 +142,17 @@ function CodingBlock({
 
   const handleEditorDidMount: OnMount = async (editor, monaco) => {
     setEditorInstance(editor);
+    setMonacoInstance(monaco);
+
+    // Add keyboard shortcut for formatting (Shift+Alt+F)
+    editor.addAction({
+      id: 'format-code',
+      label: 'Format Document',
+      keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
+      run: function(ed) {
+        ed.getAction('editor.action.formatDocument')?.run();
+      }
+    });
 
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: true,
@@ -239,9 +251,9 @@ function CodingBlock({
               onChange={(event) => setCode(event ?? "")}
               theme={editorTheme}
               loading={<Spinner variant="ring" />}
-              beforeMount={(e) => setMonacoInstance(e)}
               options={{
                 formatOnType: true,
+                formatOnPaste: true,
                 cursorBlinking: "expand",
                 codeLens: false,
                 padding: { bottom: 10, top: 20 },
@@ -335,6 +347,25 @@ function CodingBlock({
                   </DropdownMenuSub>
                 </DropdownMenuContent>
               </DropdownMenu>
+              {(language === "javascript" || language === "typescript") && <Button
+              className="ml-2 h-[70%] animate-fade-right animate-once"
+                onClick={() => {
+                  if (editorInstance) {
+                    try {
+                      editorInstance.getAction("editor.action.formatDocument")?.run();
+                    } catch (error) {
+                      console.error("Format error:", error);
+                      toast.error("Failed to format code");
+                    }
+                  } else {
+                    toast.error("Editor not ready");
+                  }
+                }}
+                variant="outline"
+                title="Format Code (Shift+Alt+F)"
+              >
+                <MdFormatAlignLeft />
+              </Button>}
             </div>
 
             <ButtonGroup className="h-[70%]">

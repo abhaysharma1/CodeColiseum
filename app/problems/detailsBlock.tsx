@@ -8,6 +8,7 @@ import TestCases from "./testCases";
 import TestCaseRunBlock from "./testCaseRunBlock";
 import SubmitCode from "./submitCode";
 import { runTestCaseType, submitTestCaseType } from "./interface";
+import { Submissions } from "./submissions";
 
 interface descriptionData {
   id: string;
@@ -40,6 +41,7 @@ function DetailsBlock({
             <TabsTrigger value="testcases">Test Cases</TabsTrigger>
             <TabsTrigger value="testcasesrun">Test Results</TabsTrigger>
             <TabsTrigger value="submitcode">Submit Code</TabsTrigger>
+            <TabsTrigger value="submitcode">Submissions</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="my-4 mx-1">
             {loadingDetails ? (
@@ -74,6 +76,9 @@ function DetailsBlock({
           </TabsContent>
           <TabsContent value="submitcode">
             <SubmitCode results={submitTestCaseResults} />
+          </TabsContent>
+          <TabsContent value="submissions">
+            <Submissions />
           </TabsContent>
         </Tabs>
       </div>
