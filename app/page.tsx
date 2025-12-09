@@ -22,7 +22,6 @@ import "ldrs/react/Mirage.css"; //
 import TiltedCard from "@/components/titledCard";
 import GlassSurface from "@/components/GlassSurface";
 import GradientText from "@/components/GradientText";
-import LightRays from "@/components/LightRays";
 
 const navbar = [
   {
