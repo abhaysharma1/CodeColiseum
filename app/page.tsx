@@ -25,7 +25,6 @@ import GradientText from "@/components/GradientText";
 import { useAuth } from "@/context/authcontext";
 
 import { MdArrowOutward } from "react-icons/md";
-import { Separator } from "@/components/ui/separator";
 
 const navbar = [
   {

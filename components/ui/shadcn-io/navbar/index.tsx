@@ -15,10 +15,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+
+
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -135,7 +138,7 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
 
     const { user } = useAuth();
 
-    const router = useRouter();
+    const { theme } = useTheme();
 
     useEffect(() => {
       const checkWidth = () => {
@@ -174,12 +177,12 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
       <header
         ref={combinedRef}
         className={cn(
-          "sticky top-0 z-50 w-full h-14 outline-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 [&_*]:no-underline",
+          "sticky top-0 z-50 w-full h-12 outline-1 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 [&_*]:no-underline",
           className
         )}
         {...props}
       >
-        <div className="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between gap-4">
+        <div className="container mx-auto flex h-12 max-w-screen-2xl items-center justify-between gap-4">
           {/* Left side */}
           <div className="flex items-center gap-2">
             {/* Mobile menu trigger */}
@@ -220,12 +223,10 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
             {/* Main nav */}
             <div className="flex items-center gap-6">
               <Link href={"/dashboard"}>
-                <button
-                  className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors cursor-pointer"
-                >
+                <button className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors cursor-pointer">
                   <div className="text-2xl">{logo}</div>
-                  <span className="hidden font-bold text-xl sm:inline-block">
-                    CodeColiseum
+                  <span className="hidden font-bold text-lg sm:inline-block font-logoFont">
+                    CODECOLISEUM
                   </span>
                 </button>
               </Link>
@@ -234,7 +235,7 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
                 <NavigationMenu className="flex">
                   <NavigationMenuList className="gap-1">
                     <NavigationMenuItem>
-                      <Link href={`/problems/list`}>
+                      <Link href={`/problemlist`}>
                         <button
                           className={cn(
                             "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer no-underline text-foreground/80"
@@ -244,6 +245,19 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
                         </button>
                       </Link>
                     </NavigationMenuItem>{" "}
+                    {user && (
+                      <NavigationMenuItem>
+                        <Link href={`/dashboard`}>
+                          <button
+                            className={cn(
+                              "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer no-underline text-foreground/80"
+                            )}
+                          >
+                            Dashboard
+                          </button>
+                        </Link>
+                      </NavigationMenuItem>
+                    )}
                   </NavigationMenuList>
                 </NavigationMenu>
               )}
