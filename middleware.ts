@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
 
   // Add CSP headers for all routes to allow GitHub OAuth and Monaco Editor
   const response = NextResponse.next();
-  
+
   // Configure CSP to allow GitHub assets, Monaco Editor, and inline scripts
   const cspHeader = `
     default-src 'self';
@@ -18,9 +18,11 @@ export async function middleware(req: NextRequest) {
     connect-src 'self' https://github.com https://api.github.com;
     frame-src 'self' https://github.com;
     worker-src 'self' blob:;
-  `.replace(/\s{2,}/g, ' ').trim();
+  `
+    .replace(/\s{2,}/g, " ")
+    .trim();
 
-  response.headers.set('Content-Security-Policy', cspHeader);
+  response.headers.set("Content-Security-Policy", cspHeader);
 
   // If it's not a protected route, return with CSP headers
   if (!pathname.startsWith("/dashboard")) {
@@ -36,6 +38,10 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
+    if (pathname.startsWith("/admin") && !(session.user.role === "ADMIN")) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
     if (!session.user.isOnboarded) {
       return NextResponse.redirect(new URL("/onboarding", req.url));
     }
@@ -44,7 +50,7 @@ export async function middleware(req: NextRequest) {
       if (session.user.role === "TEACHER") {
         return NextResponse.redirect(new URL("/dashboard/teacher", req.url));
       } else if (session.user.role === "STUDENT") {
-        return NextResponse.redirect(new URL("/dashboard/student",req.url));
+        return NextResponse.redirect(new URL("/dashboard/student", req.url));
       }
     }
     // ROLE BASED ACCESS
@@ -74,5 +80,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   runtime: "nodejs",
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
