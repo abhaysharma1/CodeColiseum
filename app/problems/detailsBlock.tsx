@@ -9,6 +9,7 @@ import TestCaseRunBlock from "./testCaseRunBlock";
 import SubmitCode from "./submitCode";
 import { runTestCaseType, submitTestCaseType } from "./interface";
 import { Submissions } from "./submissions";
+import remarkGfm from "remark-gfm";
 
 interface descriptionData {
   id: string;
@@ -55,12 +56,23 @@ function DetailsBlock({
                   {". "}
                   {data[0]?.title}
                 </div>
-                <div className="w-fit px-2 pb-0.5 bg-accent text-center rounded-xl text-sm">
-                  {data[0]?.difficulty}
+                <div
+                  className="w-fit px-2 py-0.5 flex bg-accent text-center rounded-xl text-xs"
+                  style={{
+                    color:
+                      data[0].difficulty.toLowerCase() === "hard"
+                        ? "red"
+                        : data[0].difficulty.toLowerCase() === "medium"
+                          ? "orange"
+                          : "green",
+                  }}
+                >
+                  {data[0]?.difficulty.at(0)?.toUpperCase() +
+                    data[0]?.difficulty.slice(1)?.toLowerCase()}
                 </div>
                 <div className="mt-5">
                   <div className="markdown-wrapper text-foreground mb-6">
-                    <Markdown remarkPlugins={[remarkBreaks]}>
+                    <Markdown remarkPlugins={[remarkGfm]}>
                       {data[0]?.description}
                     </Markdown>
                   </div>

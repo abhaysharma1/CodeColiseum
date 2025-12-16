@@ -1,8 +1,6 @@
 
 import { SiteHeader } from "@/components/site-header";
 import CreatedGroups from "@/app/dashboard/teacher/students/createdGroups";
-import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
 
 function Students() {
   return (

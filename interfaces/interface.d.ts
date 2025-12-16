@@ -5,8 +5,8 @@ export interface Session {
   createdAt: Date;
   updatedAt: Date;
   expiresAt: Date;
-  ipAddress?: string | null;   // ✅ optional
-  userAgent?: string | null;   // ✅ optional
+  ipAddress?: string | null; // ✅ optional
+  userAgent?: string | null; // ✅ optional
 }
 
 export interface User {
@@ -25,3 +25,15 @@ export interface UserObject {
   user: User;
   session: Session;
 }
+
+export type exam = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string | null;
+  isPublished: boolean;
+  creatorId: string;
+  startDate: Date;
+  endDate: Date;
+};

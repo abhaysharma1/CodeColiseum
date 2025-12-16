@@ -1,13 +1,14 @@
+// ===== Configuration =====
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// ===== User Model =====
+// ===== User & Authentication =====
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -41,116 +42,6 @@ enum UserRole {
   ADMIN
 }
 
-// ===== Exam System =====
-model Exam {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  creator     User             @relation("CreatedExams", fields: [creatorId], references: [id])
-  creatorId   String
-  problems    ExamProblem[]
-  enrollments ExamEnrollment[]
-  submissions Submission[]
-  results     ExamResult[]
-  startDate   DateTime
-  endDate     DateTime
-}
-
-model ExamProblem {
-  id        String  @id @default(uuid())
-  order     Int
-  exam      Exam    @relation(fields: [examId], references: [id])
-  examId    String
-  problem   Problem @relation(fields: [problemId], references: [id])
-  problemId String
-}
-
-model Problem {
-  id              String           @id @default(uuid())
-  number          Int              @unique
-  title           String
-  description     String
-  difficulty      String
-  source          String           @default("Unknown")
-  examProblems    ExamProblem[]
-  tags            ProblemTag[]
-  testCase        TestCase? // one-to-one relation
-  runTestCase     RunTestCase? // one-to-one relation
-  selfSubmissions selfSubmission[]
-}
-
-model TestCase {
-  id        String   @id @default(uuid())
-  cases     Json // Array of {input: string, output: string}
-  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  problemId String   @unique // one-to-one relationship
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model RunTestCase {
-  id        String   @id @default(uuid())
-  cases     Json // Array of {input: string, output: string}
-  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  problemId String   @unique // one-to-one relationship
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model selfSubmission {
-  id              String   @id @default(uuid())
-  code            String
-  language        String
-  noOfPassedCases Int
-  failedCase      Json?
-  createdAt       DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  problem   Problem @relation(fields: [problemId], references: [id])
-  problemId String
-}
-
-model Submission {
-  id        String   @id @default(uuid())
-  code      String
-  language  String
-  createdAt DateTime @default(now())
-
-  exam   Exam   @relation(fields: [examId], references: [id])
-  examId String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-}
-
-model ExamEnrollment {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-
-  exam   Exam   @relation(fields: [examId], references: [id])
-  examId String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  @@unique([examId, userId])
-}
-
-model ExamResult {
-  id        String   @id @default(uuid())
-  score     Int
-  createdAt DateTime @default(now())
-
-  exam   Exam   @relation(fields: [examId], references: [id])
-  examId String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-}
-
-// ===== Better Auth Models =====
 model Session {
   id        String   @id @default(uuid())
   userId    String
@@ -198,6 +89,129 @@ model Verification {
   @@map("verification")
 }
 
+// ===== Problems & Test Cases =====
+model Problem {
+  id              String           @id @default(uuid())
+  number          Int              @unique
+  title           String
+  description     String
+  difficulty      String
+  source          String           @default("Unknown")
+  examProblems    ExamProblem[]
+  tags            ProblemTag[]
+  testCase        TestCase? // one-to-one relation
+  runTestCase     RunTestCase? // one-to-one relation
+  selfSubmissions selfSubmission[]
+}
+
+model TestCase {
+  id        String   @id @default(uuid())
+  cases     Json // Array of {input: string, output: string}
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String   @unique // one-to-one relationship
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RunTestCase {
+  id        String   @id @default(uuid())
+  cases     Json // Array of {input: string, output: string}
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String   @unique // one-to-one relationship
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model selfSubmission {
+  id              String   @id @default(uuid())
+  code            String
+  language        String
+  noOfPassedCases Int
+  failedCase      Json?
+  createdAt       DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  problem   Problem @relation(fields: [problemId], references: [id])
+  problemId String
+}
+
+// ===== Exams & Submissions =====
+model Exam {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isPublished Boolean @default(false)
+
+  creator     User             @relation("CreatedExams", fields: [creatorId], references: [id])
+  creatorId   String
+  problems    ExamProblem[]
+  enrollments ExamEnrollment[]
+  submissions Submission[]
+  results     ExamResult[]
+  startDate   DateTime
+  endDate     DateTime
+  examGroups  ExamGroup[]
+}
+
+model ExamProblem {
+  id        String  @id @default(uuid())
+  order     Int
+  exam      Exam    @relation(fields: [examId], references: [id])
+  examId    String
+  problem   Problem @relation(fields: [problemId], references: [id])
+  problemId String
+}
+
+model ExamEnrollment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  exam   Exam   @relation(fields: [examId], references: [id])
+  examId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([examId, userId])
+}
+
+model Submission {
+  id        String   @id @default(uuid())
+  code      String
+  language  String
+  createdAt DateTime @default(now())
+
+  exam   Exam   @relation(fields: [examId], references: [id])
+  examId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model ExamResult {
+  id        String   @id @default(uuid())
+  score     Int
+  createdAt DateTime @default(now())
+
+  exam   Exam   @relation(fields: [examId], references: [id])
+  examId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model ExamGroup {
+  id      String @id @default(uuid())
+  examId  String
+  groupId String
+
+  exam  Exam  @relation(fields: [examId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, groupId])
+}
+
 // ===== Student Groups =====
 model Group {
   id          String        @id @default(uuid())
@@ -209,6 +223,7 @@ model Group {
   noOfMembers Int           @default(0)
   createdAt   DateTime      @default(now())
   joinByLink  Boolean       @default(true)
+  examGroups  ExamGroup[]
 }
 
 model GroupMember {
@@ -230,7 +245,7 @@ model Tag {
 }
 
 model ProblemTag {
-  problem   Problem @relation(fields: [problemId], references: [id])
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   problemId String
 
   tag   Tag    @relation(fields: [tagId], references: [id])

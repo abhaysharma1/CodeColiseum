@@ -51,6 +51,8 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard/teacher", req.url));
       } else if (session.user.role === "STUDENT") {
         return NextResponse.redirect(new URL("/dashboard/student", req.url));
+      } else if (session.user.role === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
       }
     }
     // ROLE BASED ACCESS

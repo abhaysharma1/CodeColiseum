@@ -38,7 +38,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
-import Link from "next/link";
+import { toast } from "sonner";
+import { draftTest } from "@/app/actions/teacher/tests/createdraft";
 
 const data: incomingData[] = [
   {
@@ -289,6 +290,9 @@ export default function DataTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const [draftingTest, startTransition] = React.useTransition();
+  const router = useRouter();
+
   const table = useReactTable({
     data,
     columns,
@@ -307,8 +311,6 @@ export default function DataTable() {
       rowSelection,
     },
   });
-
-  const router = useRouter();
 
   return (
     <div className="w-full h-full animate-fade-left animate-once">
@@ -330,10 +332,13 @@ export default function DataTable() {
               />
 
               <div className="">
-                <Button className="mr-4" variant="default" asChild>
-                  <Link href={"/dashboard/teacher/createtest"}>
-                    Create Test
-                  </Link>
+                <Button
+                  className="mr-4"
+                  variant="default"
+                  disabled={draftingTest}
+                  onClick={() => startTransition(() => draftTest())}
+                >
+                  {draftingTest ? "Wait..." : "Create Test"}
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

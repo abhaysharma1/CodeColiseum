@@ -6,24 +6,38 @@ import {
   DropzoneContent,
   DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone";
+import { useAuth } from "@/context/authcontext";
 import axios from "axios";
 import { UploadIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { toast } from "sonner";
 
+type RowResult =
+  | { title: string; result: "created"; number: number }
+  | { title: string; result: "error"; message: string };
+
+interface responseType {
+  error?: boolean;
+  success?: boolean;
+  results: RowResult[];
+}
+
 function page() {
   const [files, setFiles] = useState<File[] | undefined>();
-  const [response, setResponse] = useState();
-  const [error, setError] = useState();
+  const [response, setResponse] = useState<responseType | undefined>();
   const [loading, setLoading] = useState(false);
+
+  const { logout } = useAuth();
+
+  const router = useRouter();
 
   const exampleTemplate = `[
     {
-      number: 1,
       title: "Two Sum",
-      description: "Given an array of integers and a target,.",
+      description: "Given an array of integers and a target,. in Markdown Format",
       difficulty: "EASY",
       source: "Internal",
       tags: ["array", "hashmap"],
@@ -42,6 +56,7 @@ function page() {
       return;
     }
 
+    setLoading(true);
     const file = files[0];
 
     let jsonText: string;
@@ -62,9 +77,11 @@ function page() {
 
     try {
       setLoading(true);
-      const res = await axios.post("/api/admin/uploadProblems", json, {
+      const res = await axios.post("/api/admin/uploadproblems", json, {
         headers: { "Content-Type": "application/json" },
       });
+      console.log(res);
+      setResponse(res.data as responseType);
     } catch (error) {
       console.log(error);
     } finally {
@@ -78,9 +95,24 @@ function page() {
   };
   return (
     <div className="p-5">
-      <div className="w-full">
-        <h1 className="font-logoFont">CODECOLISEUM</h1>
-        <h1 className="">Admin Panel</h1>
+      <div className="w-full flex justify-between">
+        <div>
+          <h1 className="font-logoFont">CODECOLISEUM</h1>
+          <h1 className="">Admin Panel</h1>
+        </div>
+        <div className="">
+          <Button
+            onClick={() => {
+              toast.loading("Logging out");
+              logout();
+              toast.dismiss();
+              router.replace("/login");
+            }}
+            className="cursor-pointer"
+          >
+            Logout
+          </Button>
+        </div>
       </div>
       <div className="w-full h-[100vh]  flex justify-center items-center">
         <div className="w-[50%] h-[100%] flex flex-col gap-3 mt-10 items-center">
@@ -125,7 +157,8 @@ function page() {
             <div className="w-full flex justify-end mt-2">
               <Button
                 className="w-fit cursor-pointer"
-                onClick={() => uploadProblems}
+                onClick={uploadProblems}
+                disabled={loading}
               >
                 {loading ? "Wait..." : "Submit"}
               </Button>
@@ -134,7 +167,20 @@ function page() {
           <div>
             {response && (
               <Card>
-                <CardContent>{response && response}</CardContent>
+                <CardContent>
+                  {response.success ? (
+                    <h1 className="text-green-400">Accepted</h1>
+                  ) : (
+                    <h1 className="text-red-400">Declined</h1>
+                  )}{" "}
+                  <SyntaxHighlighter
+                    language="json"
+                    style={atomDark}
+                    className="rounded-md outline-1"
+                  >
+                    {JSON.stringify(response.results,null, 2)}
+                  </SyntaxHighlighter>
+                </CardContent>
               </Card>
             )}
           </div>
@@ -144,7 +190,7 @@ function page() {
           <SyntaxHighlighter
             language="json"
             style={atomDark}
-            className="rounded-md outline-1"
+            className="rounded-md outline-1 overflow-y-scroll"
           >
             {exampleTemplate}
           </SyntaxHighlighter>
