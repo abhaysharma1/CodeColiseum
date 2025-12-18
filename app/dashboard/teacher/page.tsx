@@ -40,107 +40,20 @@ import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { toast } from "sonner";
 import { draftTest } from "@/app/actions/teacher/tests/createdraft";
-
-const data: incomingData[] = [
-  {
-    id: "exam_001",
-    title: "Data Structures Midterm",
-    description: "Covers stacks, queues, linked lists, and trees.",
-    timeLimit: 90,
-    creatorId: "teacher_123",
-    startingDate: "2025-10-05T09:00:00.000Z",
-    endDate: "2025-10-05T11:00:00.000Z",
-    status: "upcoming",
-    candidates: ["student_001", "student_002"],
-    participants: ["student_001", "student_002", "student_003", "student_004"],
-  },
-  {
-    id: "exam_002",
-    title: "Algorithms Final",
-    description: "Sorting, searching, dynamic programming, and graphs.",
-    timeLimit: 120,
-    creatorId: "teacher_456",
-    startingDate: "2025-12-15T13:00:00.000Z",
-    endDate: "2025-12-15T16:00:00.000Z",
-    status: "upcoming",
-    candidates: ["student_005"],
-    participants: ["student_005", "student_006", "student_007"],
-  },
-  {
-    id: "exam_003",
-    title: "Operating Systems Quiz",
-    description: "Memory management, processes, threads, and file systems.",
-    timeLimit: 45,
-    creatorId: "teacher_789",
-    startingDate: "2025-09-15T10:30:00.000Z",
-    endDate: "2025-09-15T11:15:00.000Z",
-    status: "ended",
-    candidates: ["student_008", "student_009"],
-    participants: ["student_008", "student_009", "student_010"],
-  },
-  {
-    id: "exam_004",
-    title: "Database Systems Assignment",
-    description: "ER diagrams, SQL queries, normalization, and transactions.",
-    timeLimit: 60,
-    creatorId: "teacher_234",
-    startingDate: "2025-10-12T08:00:00.000Z",
-    endDate: "2025-10-12T09:00:00.000Z",
-    status: "upcoming",
-    candidates: [],
-    participants: ["student_011", "student_012"],
-  },
-  {
-    id: "exam_005",
-    title: "Computer Networks Test",
-    description: "OSI model, TCP/IP, routing algorithms, and protocols.",
-    timeLimit: 75,
-    creatorId: "teacher_345",
-    startingDate: "2025-08-01T14:00:00.000Z",
-    endDate: "2025-08-01T15:15:00.000Z",
-    status: "ended",
-    candidates: ["student_013", "student_014", "student_015"],
-    participants: ["student_013", "student_014", "student_015", "student_016"],
-  },
-  {
-    id: "exam_006",
-    title: "Software Engineering Project Review",
-    description:
-      "Covers agile methodology, UML diagrams, and testing strategies.",
-    timeLimit: 90,
-    creatorId: "teacher_567",
-    startingDate: "2025-10-25T10:00:00.000Z",
-    endDate: "2025-10-25T11:30:00.000Z",
-    status: "upcoming",
-    candidates: [],
-    participants: ["student_017", "student_018", "student_019"],
-  },
-  {
-    id: "exam_007",
-    title: "Artificial Intelligence Quiz",
-    description:
-      "Machine learning basics, search algorithms, and neural networks.",
-    timeLimit: 60,
-    creatorId: "teacher_678",
-    startingDate: "2025-07-05T09:30:00.000Z",
-    endDate: "2025-07-05T10:30:00.000Z",
-    status: "ended",
-    candidates: ["student_020", "student_021"],
-    participants: ["student_020", "student_021", "student_022"],
-  },
-];
+import fetchAllExams from "@/app/actions/teacher/tests/fetchAllExams";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import Link from "next/link";
 
 export interface incomingData {
-  id: string; // unique exam ID
-  title: string; // exam title
-  description: string; // exam description
-  timeLimit: number; // in minutes
-  creatorId: string; // teacher ID who created the exam
-  startingDate: string; // ISO 8601 string
-  endDate: string; // ISO 8601 string
-  status: "upcoming" | "ended"; // exam status
-  candidates: string[]; // array of student IDs who have taken the exam
-  participants: string[];
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string | null;
+  isPublished: boolean;
+  creatorId: string;
+  startDate: Date;
+  endDate: Date;
 }
 
 const columns: ColumnDef<incomingData>[] = [
@@ -174,21 +87,21 @@ const columns: ColumnDef<incomingData>[] = [
     ),
   },
   {
-    accessorKey: "endDate",
+    accessorKey: "startDate",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          End Date
+          Start Date
           <ArrowUpDown />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const date = row.getValue("endDate");
-      const formattedDate = new Date(date as string);
+      const date = row.getValue("startDate") as Date;
+      const formattedDate = new Date(date);
 
       return (
         <div className="">
@@ -205,11 +118,11 @@ const columns: ColumnDef<incomingData>[] = [
     },
   },
   {
-    accessorKey: "startingDate",
-    header: () => <div className="text-left">Starting Date</div>,
+    accessorKey: "endDate",
+    header: () => <div className="text-left">End Date</div>,
     cell: ({ row }) => {
-      const date = row.getValue("startingDate");
-      const formattedDate = new Date(date as string);
+      const date = row.getValue("endDate") as Date;
+      const formattedDate = new Date(date);
 
       return (
         <div className="text-left font-medium">
@@ -231,21 +144,19 @@ const columns: ColumnDef<incomingData>[] = [
     cell: ({ row }) => {
       return (
         <div className="text-left font-medium w-[15vw] truncate">
-          {row.getValue("description")}
+          {row.getValue("description") || "N/A"}
         </div>
       );
     },
   },
   {
-    id: "candidates",
-    header: () => <div className="text-left">Candidates/Enrolled</div>,
-    accessorFn: (row) => row.candidates, // optional, for filtering/sorting
+    accessorKey: "isPublished",
+    header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
-      const candi: string[] = row.original.candidates ?? [];
-      const parti: string[] = row.original.participants ?? [];
+      const isPublished = row.getValue("isPublished") as boolean;
       return (
         <div className="text-center font-medium">
-          {candi.length}/{parti.length}
+          {isPublished ? "Published" : "Draft"}
         </div>
       );
     },
@@ -266,14 +177,13 @@ const columns: ColumnDef<incomingData>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            {!row.original.isPublished && (
+              <DropdownMenuItem asChild>
+                <Link href={`teacher/test/edit/${row.original.id}`}>Edit</Link>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem>See Results</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -289,9 +199,25 @@ export default function DataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [data, setData] = React.useState<incomingData[]>([]);
 
   const [draftingTest, startTransition] = React.useTransition();
+
+  const [loading, setLoading] = React.useState(false);
+
   const router = useRouter();
+
+  // TODO: Fetch data on component mount
+  React.useEffect(() => {
+    const fetchExams = async () => {
+      setLoading(true);
+      const allTests = await fetchAllExams();
+      setData(allTests);
+      setLoading(false);
+    };
+
+    fetchExams();
+  }, []);
 
   const table = useReactTable({
     data,
@@ -411,7 +337,13 @@ export default function DataTable() {
                         colSpan={columns.length}
                         className="h-24 text-center"
                       >
-                        No results.
+                        {loading ? (
+                          <div className="w-full flex justify-center">
+                            <Spinner variant="infinite" />
+                          </div>
+                        ) : (
+                          "No Results"
+                        )}
                       </TableCell>
                     </TableRow>
                   )}
