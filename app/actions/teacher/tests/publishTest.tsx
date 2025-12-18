@@ -1,6 +1,7 @@
-"use server"
+"use server";
 import prisma from "@/lib/prisma";
 import assertExamAccess from "./assertExamAccess";
+import { error } from "console";
 
 interface inputProps {
   updatedExamDetails: exam;
@@ -40,6 +41,10 @@ export default async function publishTest({
 }) {
   const { session, exam } = await assertExamAccess(updatedExamDetails.id);
 
+  if (exam.isPublished) {
+    throw error("Published Exam cannot be Edited");
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.exam.update({
       where: {
@@ -48,7 +53,7 @@ export default async function publishTest({
       data: {
         title: updatedExamDetails.title,
         description: updatedExamDetails.description || "",
-        isPublished: false,
+        isPublished: true,
         startDate: updatedExamDetails.startDate,
         endDate: updatedExamDetails.endDate,
       },

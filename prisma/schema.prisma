@@ -32,6 +32,7 @@ model User {
   createdGroups   Group[]          @relation("TeacherGroups")
   memberGroups    GroupMember[]
   selfSubmissions selfSubmission[]
+  examAttempts    ExamAttempt[]
 
   @@map("user")
 }
@@ -102,6 +103,7 @@ model Problem {
   testCase        TestCase? // one-to-one relation
   runTestCase     RunTestCase? // one-to-one relation
   selfSubmissions selfSubmission[]
+  submissions     Submission[]
 }
 
 model TestCase {
@@ -144,17 +146,18 @@ model Exam {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  isPublished Boolean @default(false)
+  isPublished Boolean  @default(false)
 
-  creator     User             @relation("CreatedExams", fields: [creatorId], references: [id])
-  creatorId   String
-  problems    ExamProblem[]
-  enrollments ExamEnrollment[]
-  submissions Submission[]
-  results     ExamResult[]
-  startDate   DateTime
-  endDate     DateTime
-  examGroups  ExamGroup[]
+  creator      User             @relation("CreatedExams", fields: [creatorId], references: [id])
+  creatorId    String
+  problems     ExamProblem[]
+  enrollments  ExamEnrollment[]
+  submissions  Submission[]
+  results      ExamResult[]
+  startDate    DateTime
+  endDate      DateTime
+  examGroups   ExamGroup[]
+  examAttempts ExamAttempt[]
 }
 
 model ExamProblem {
@@ -179,15 +182,40 @@ model ExamEnrollment {
 }
 
 model Submission {
-  id        String   @id @default(uuid())
-  code      String
-  language  String
-  createdAt DateTime @default(now())
+  id        String @id @default(uuid())
+  attemptId String
+  problemId String
 
-  exam   Exam   @relation(fields: [examId], references: [id])
-  examId String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  language   String
+  sourceCode String
+
+  status SubmissionStatus @default(PENDING)
+  score  Int              @default(0)
+
+  result Json? // sanitized Judge0 output
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attempt ExamAttempt @relation(fields: [attemptId], references: [id])
+  problem Problem     @relation(fields: [problemId], references: [id])
+  user    User?       @relation(fields: [userId], references: [id])
+  userId  String?
+  exam    Exam?       @relation(fields: [examId], references: [id])
+  examId  String?
+}
+
+enum SubmissionStatus {
+  PENDING // Accepted by backend, not yet sent to judge
+  RUNNING // Being executed by Judge0
+  ACCEPTED // All test cases passed
+  PARTIAL // Some test cases passed
+  WRONG_ANSWER
+  TIME_LIMIT
+  MEMORY_LIMIT
+  RUNTIME_ERROR
+  COMPILE_ERROR
+  INTERNAL_ERROR // Judge failure / unexpected error
 }
 
 model ExamResult {
@@ -210,6 +238,34 @@ model ExamGroup {
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@unique([examId, groupId])
+}
+
+model ExamAttempt {
+  id        String @id @default(uuid())
+  examId    String
+  studentId String
+
+  status ExamAttemptStatus @default(NOT_STARTED)
+
+  startedAt   DateTime?
+  submittedAt DateTime?
+
+  totalScore Int @default(0)
+
+  exam    Exam @relation(fields: [examId], references: [id])
+  student User @relation(fields: [studentId], references: [id])
+
+  submissions Submission[]
+
+  @@unique([examId, studentId])
+}
+
+enum ExamAttemptStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  AUTO_SUBMITTED
+  TERMINATED
 }
 
 // ===== Student Groups =====

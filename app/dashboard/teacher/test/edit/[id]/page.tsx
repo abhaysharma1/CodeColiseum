@@ -120,6 +120,10 @@ function Page() {
     if (!examDetails || !startDate || !endDate || !startTime || !endTime)
       return;
 
+    if (examDetails.isPublished) {
+      toast.error("Published Exam cannot be Edited");
+      return;
+    }
     if (startDate > endDate) {
       toast.error("Start Date must be < End Date");
       return;
@@ -157,6 +161,11 @@ function Page() {
   const publishTestFunc = async () => {
     if (!examDetails || !startDate || !endDate || !startTime || !endTime)
       return;
+
+    if (examDetails.isPublished) {
+      toast.error("Published Exam cannot be Edited");
+      return;
+    }
 
     if (startDate > endDate) {
       toast.error("Start Date must be < End Date");
