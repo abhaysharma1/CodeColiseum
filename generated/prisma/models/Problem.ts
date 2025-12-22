@@ -229,6 +229,7 @@ export type ProblemWhereInput = {
   testCase?: Prisma.XOR<Prisma.TestCaseNullableScalarRelationFilter, Prisma.TestCaseWhereInput> | null
   runTestCase?: Prisma.XOR<Prisma.RunTestCaseNullableScalarRelationFilter, Prisma.RunTestCaseWhereInput> | null
   selfSubmissions?: Prisma.SelfSubmissionListRelationFilter
+  submissions?: Prisma.SubmissionListRelationFilter
 }
 
 export type ProblemOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type ProblemOrderByWithRelationInput = {
   testCase?: Prisma.TestCaseOrderByWithRelationInput
   runTestCase?: Prisma.RunTestCaseOrderByWithRelationInput
   selfSubmissions?: Prisma.selfSubmissionOrderByRelationAggregateInput
+  submissions?: Prisma.SubmissionOrderByRelationAggregateInput
 }
 
 export type ProblemWhereUniqueInput = Prisma.AtLeast<{
@@ -260,6 +262,7 @@ export type ProblemWhereUniqueInput = Prisma.AtLeast<{
   testCase?: Prisma.XOR<Prisma.TestCaseNullableScalarRelationFilter, Prisma.TestCaseWhereInput> | null
   runTestCase?: Prisma.XOR<Prisma.RunTestCaseNullableScalarRelationFilter, Prisma.RunTestCaseWhereInput> | null
   selfSubmissions?: Prisma.SelfSubmissionListRelationFilter
+  submissions?: Prisma.SubmissionListRelationFilter
 }, "id" | "number">
 
 export type ProblemOrderByWithAggregationInput = {
@@ -300,6 +303,7 @@ export type ProblemCreateInput = {
   testCase?: Prisma.TestCaseCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateInput = {
@@ -314,6 +318,7 @@ export type ProblemUncheckedCreateInput = {
   testCase?: Prisma.TestCaseUncheckedCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseUncheckedCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUpdateInput = {
@@ -328,6 +333,7 @@ export type ProblemUpdateInput = {
   testCase?: Prisma.TestCaseUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateInput = {
@@ -342,6 +348,7 @@ export type ProblemUncheckedUpdateInput = {
   testCase?: Prisma.TestCaseUncheckedUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUncheckedUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateManyInput = {
@@ -475,6 +482,20 @@ export type ProblemUpdateOneRequiredWithoutExamProblemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProblemUpdateToOneWithWhereWithoutExamProblemsInput, Prisma.ProblemUpdateWithoutExamProblemsInput>, Prisma.ProblemUncheckedUpdateWithoutExamProblemsInput>
 }
 
+export type ProblemCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutSubmissionsInput
+  connect?: Prisma.ProblemWhereUniqueInput
+}
+
+export type ProblemUpdateOneRequiredWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.ProblemUpsertWithoutSubmissionsInput
+  connect?: Prisma.ProblemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProblemUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.ProblemUpdateWithoutSubmissionsInput>, Prisma.ProblemUncheckedUpdateWithoutSubmissionsInput>
+}
+
 export type ProblemCreateNestedOneWithoutTagsInput = {
   create?: Prisma.XOR<Prisma.ProblemCreateWithoutTagsInput, Prisma.ProblemUncheckedCreateWithoutTagsInput>
   connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutTagsInput
@@ -500,6 +521,7 @@ export type ProblemCreateWithoutTestCaseInput = {
   tags?: Prisma.ProblemTagCreateNestedManyWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutTestCaseInput = {
@@ -513,6 +535,7 @@ export type ProblemUncheckedCreateWithoutTestCaseInput = {
   tags?: Prisma.ProblemTagUncheckedCreateNestedManyWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseUncheckedCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutTestCaseInput = {
@@ -542,6 +565,7 @@ export type ProblemUpdateWithoutTestCaseInput = {
   tags?: Prisma.ProblemTagUpdateManyWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutTestCaseInput = {
@@ -555,6 +579,7 @@ export type ProblemUncheckedUpdateWithoutTestCaseInput = {
   tags?: Prisma.ProblemTagUncheckedUpdateManyWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUncheckedUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateWithoutRunTestCaseInput = {
@@ -568,6 +593,7 @@ export type ProblemCreateWithoutRunTestCaseInput = {
   tags?: Prisma.ProblemTagCreateNestedManyWithoutProblemInput
   testCase?: Prisma.TestCaseCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutRunTestCaseInput = {
@@ -581,6 +607,7 @@ export type ProblemUncheckedCreateWithoutRunTestCaseInput = {
   tags?: Prisma.ProblemTagUncheckedCreateNestedManyWithoutProblemInput
   testCase?: Prisma.TestCaseUncheckedCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutRunTestCaseInput = {
@@ -610,6 +637,7 @@ export type ProblemUpdateWithoutRunTestCaseInput = {
   tags?: Prisma.ProblemTagUpdateManyWithoutProblemNestedInput
   testCase?: Prisma.TestCaseUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutRunTestCaseInput = {
@@ -623,6 +651,7 @@ export type ProblemUncheckedUpdateWithoutRunTestCaseInput = {
   tags?: Prisma.ProblemTagUncheckedUpdateManyWithoutProblemNestedInput
   testCase?: Prisma.TestCaseUncheckedUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateWithoutSelfSubmissionsInput = {
@@ -636,6 +665,7 @@ export type ProblemCreateWithoutSelfSubmissionsInput = {
   tags?: Prisma.ProblemTagCreateNestedManyWithoutProblemInput
   testCase?: Prisma.TestCaseCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseCreateNestedOneWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutSelfSubmissionsInput = {
@@ -649,6 +679,7 @@ export type ProblemUncheckedCreateWithoutSelfSubmissionsInput = {
   tags?: Prisma.ProblemTagUncheckedCreateNestedManyWithoutProblemInput
   testCase?: Prisma.TestCaseUncheckedCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseUncheckedCreateNestedOneWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutSelfSubmissionsInput = {
@@ -678,6 +709,7 @@ export type ProblemUpdateWithoutSelfSubmissionsInput = {
   tags?: Prisma.ProblemTagUpdateManyWithoutProblemNestedInput
   testCase?: Prisma.TestCaseUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUpdateOneWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutSelfSubmissionsInput = {
@@ -691,6 +723,7 @@ export type ProblemUncheckedUpdateWithoutSelfSubmissionsInput = {
   tags?: Prisma.ProblemTagUncheckedUpdateManyWithoutProblemNestedInput
   testCase?: Prisma.TestCaseUncheckedUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUncheckedUpdateOneWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateWithoutExamProblemsInput = {
@@ -704,6 +737,7 @@ export type ProblemCreateWithoutExamProblemsInput = {
   testCase?: Prisma.TestCaseCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutExamProblemsInput = {
@@ -717,6 +751,7 @@ export type ProblemUncheckedCreateWithoutExamProblemsInput = {
   testCase?: Prisma.TestCaseUncheckedCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseUncheckedCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutExamProblemsInput = {
@@ -746,6 +781,7 @@ export type ProblemUpdateWithoutExamProblemsInput = {
   testCase?: Prisma.TestCaseUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutExamProblemsInput = {
@@ -755,6 +791,79 @@ export type ProblemUncheckedUpdateWithoutExamProblemsInput = {
   description?: Prisma.StringFieldUpdateOperationsInput | string
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   source?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.ProblemTagUncheckedUpdateManyWithoutProblemNestedInput
+  testCase?: Prisma.TestCaseUncheckedUpdateOneWithoutProblemNestedInput
+  runTestCase?: Prisma.RunTestCaseUncheckedUpdateOneWithoutProblemNestedInput
+  selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
+}
+
+export type ProblemCreateWithoutSubmissionsInput = {
+  id?: string
+  number: number
+  title: string
+  description: string
+  difficulty: string
+  source?: string
+  examProblems?: Prisma.ExamProblemCreateNestedManyWithoutProblemInput
+  tags?: Prisma.ProblemTagCreateNestedManyWithoutProblemInput
+  testCase?: Prisma.TestCaseCreateNestedOneWithoutProblemInput
+  runTestCase?: Prisma.RunTestCaseCreateNestedOneWithoutProblemInput
+  selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutProblemInput
+}
+
+export type ProblemUncheckedCreateWithoutSubmissionsInput = {
+  id?: string
+  number: number
+  title: string
+  description: string
+  difficulty: string
+  source?: string
+  examProblems?: Prisma.ExamProblemUncheckedCreateNestedManyWithoutProblemInput
+  tags?: Prisma.ProblemTagUncheckedCreateNestedManyWithoutProblemInput
+  testCase?: Prisma.TestCaseUncheckedCreateNestedOneWithoutProblemInput
+  runTestCase?: Prisma.RunTestCaseUncheckedCreateNestedOneWithoutProblemInput
+  selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutProblemInput
+}
+
+export type ProblemCreateOrConnectWithoutSubmissionsInput = {
+  where: Prisma.ProblemWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
+}
+
+export type ProblemUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.ProblemUpdateWithoutSubmissionsInput, Prisma.ProblemUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
+  where?: Prisma.ProblemWhereInput
+}
+
+export type ProblemUpdateToOneWithWhereWithoutSubmissionsInput = {
+  where?: Prisma.ProblemWhereInput
+  data: Prisma.XOR<Prisma.ProblemUpdateWithoutSubmissionsInput, Prisma.ProblemUncheckedUpdateWithoutSubmissionsInput>
+}
+
+export type ProblemUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  difficulty?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  examProblems?: Prisma.ExamProblemUpdateManyWithoutProblemNestedInput
+  tags?: Prisma.ProblemTagUpdateManyWithoutProblemNestedInput
+  testCase?: Prisma.TestCaseUpdateOneWithoutProblemNestedInput
+  runTestCase?: Prisma.RunTestCaseUpdateOneWithoutProblemNestedInput
+  selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutProblemNestedInput
+}
+
+export type ProblemUncheckedUpdateWithoutSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  difficulty?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  examProblems?: Prisma.ExamProblemUncheckedUpdateManyWithoutProblemNestedInput
   tags?: Prisma.ProblemTagUncheckedUpdateManyWithoutProblemNestedInput
   testCase?: Prisma.TestCaseUncheckedUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUncheckedUpdateOneWithoutProblemNestedInput
@@ -772,6 +881,7 @@ export type ProblemCreateWithoutTagsInput = {
   testCase?: Prisma.TestCaseCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutTagsInput = {
@@ -785,6 +895,7 @@ export type ProblemUncheckedCreateWithoutTagsInput = {
   testCase?: Prisma.TestCaseUncheckedCreateNestedOneWithoutProblemInput
   runTestCase?: Prisma.RunTestCaseUncheckedCreateNestedOneWithoutProblemInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutTagsInput = {
@@ -814,6 +925,7 @@ export type ProblemUpdateWithoutTagsInput = {
   testCase?: Prisma.TestCaseUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutTagsInput = {
@@ -827,6 +939,7 @@ export type ProblemUncheckedUpdateWithoutTagsInput = {
   testCase?: Prisma.TestCaseUncheckedUpdateOneWithoutProblemNestedInput
   runTestCase?: Prisma.RunTestCaseUncheckedUpdateOneWithoutProblemNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 
@@ -838,12 +951,14 @@ export type ProblemCountOutputType = {
   examProblems: number
   tags: number
   selfSubmissions: number
+  submissions: number
 }
 
 export type ProblemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   examProblems?: boolean | ProblemCountOutputTypeCountExamProblemsArgs
   tags?: boolean | ProblemCountOutputTypeCountTagsArgs
   selfSubmissions?: boolean | ProblemCountOutputTypeCountSelfSubmissionsArgs
+  submissions?: boolean | ProblemCountOutputTypeCountSubmissionsArgs
 }
 
 /**
@@ -877,6 +992,13 @@ export type ProblemCountOutputTypeCountSelfSubmissionsArgs<ExtArgs extends runti
   where?: Prisma.selfSubmissionWhereInput
 }
 
+/**
+ * ProblemCountOutputType without action
+ */
+export type ProblemCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SubmissionWhereInput
+}
+
 
 export type ProblemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -890,6 +1012,7 @@ export type ProblemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   testCase?: boolean | Prisma.Problem$testCaseArgs<ExtArgs>
   runTestCase?: boolean | Prisma.Problem$runTestCaseArgs<ExtArgs>
   selfSubmissions?: boolean | Prisma.Problem$selfSubmissionsArgs<ExtArgs>
+  submissions?: boolean | Prisma.Problem$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProblemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["problem"]>
 
@@ -927,6 +1050,7 @@ export type ProblemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   testCase?: boolean | Prisma.Problem$testCaseArgs<ExtArgs>
   runTestCase?: boolean | Prisma.Problem$runTestCaseArgs<ExtArgs>
   selfSubmissions?: boolean | Prisma.Problem$selfSubmissionsArgs<ExtArgs>
+  submissions?: boolean | Prisma.Problem$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProblemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProblemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -940,6 +1064,7 @@ export type $ProblemPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     testCase: Prisma.$TestCasePayload<ExtArgs> | null
     runTestCase: Prisma.$RunTestCasePayload<ExtArgs> | null
     selfSubmissions: Prisma.$selfSubmissionPayload<ExtArgs>[]
+    submissions: Prisma.$SubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1347,6 +1472,7 @@ export interface Prisma__ProblemClient<T, Null = never, ExtArgs extends runtime.
   testCase<T extends Prisma.Problem$testCaseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$testCaseArgs<ExtArgs>>): Prisma.Prisma__TestCaseClient<runtime.Types.Result.GetResult<Prisma.$TestCasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   runTestCase<T extends Prisma.Problem$runTestCaseArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$runTestCaseArgs<ExtArgs>>): Prisma.Prisma__RunTestCaseClient<runtime.Types.Result.GetResult<Prisma.$RunTestCasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   selfSubmissions<T extends Prisma.Problem$selfSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$selfSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$selfSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submissions<T extends Prisma.Problem$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1877,6 +2003,30 @@ export type Problem$selfSubmissionsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.SelfSubmissionScalarFieldEnum | Prisma.SelfSubmissionScalarFieldEnum[]
+}
+
+/**
+ * Problem.submissions
+ */
+export type Problem$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Submission
+   */
+  select?: Prisma.SubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Submission
+   */
+  omit?: Prisma.SubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  where?: Prisma.SubmissionWhereInput
+  orderBy?: Prisma.SubmissionOrderByWithRelationInput | Prisma.SubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.SubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SubmissionScalarFieldEnum | Prisma.SubmissionScalarFieldEnum[]
 }
 
 /**

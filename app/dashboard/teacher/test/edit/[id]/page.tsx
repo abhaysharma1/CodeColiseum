@@ -140,7 +140,6 @@ function Page() {
 
     setExamDetails(updatedExamDetails);
 
-    console.log(updatedExamDetails);
 
     if (updatedExamDetails && selectedGroups && selectedProblemsId) {
       try {
@@ -227,17 +226,19 @@ function Page() {
   }, []);
 
   useEffect(() => {
+
     async function fetchSelectedGroups() {
       if (examDetails && examDetails.id) {
         const data = await getAllSelectedGroups(examDetails.id);
         setSelectedGroups(data);
       }
     }
+
     async function fetchSelectedProblems() {
       if (examDetails && examDetails.id) {
         const data = await getSelectedProblems(examDetails.id);
         if (data.length > 0) {
-          const onlyIds = data.map((item) => item.id);
+          const onlyIds = data.map((item) => item.problemId);
           setSelectedProblemsId(onlyIds);
         }
       }
@@ -435,7 +436,7 @@ function Page() {
                   startPublishingTestTransition(() => publishTestFunc())
                 }
               >
-                {publishingTest ? "Wait..." : "Publish"}
+                {publishingTest ? "Publishing..." : "Publish"}
               </Button>
             </div>
           </div>

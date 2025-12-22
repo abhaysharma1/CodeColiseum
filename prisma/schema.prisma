@@ -163,7 +163,7 @@ model Exam {
 model ExamProblem {
   id        String  @id @default(uuid())
   order     Int
-  exam      Exam    @relation(fields: [examId], references: [id])
+  exam      Exam    @relation(fields: [examId], references: [id],onDelete:Cascade)
   examId    String
   problem   Problem @relation(fields: [problemId], references: [id])
   problemId String

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
@@ -19,8 +19,11 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { getLanguageId } from "@/utils/getLanguageId";
-import { MdFormatAlignLeft } from "react-icons/md"
-import { runTestCaseType, submitTestCaseType } from "./interface";
+import { MdFormatAlignLeft } from "react-icons/md";
+import {
+  runTestCaseType,
+  submitTestCaseType,
+} from "@/app/test/givetest/[id]/interface";
 
 interface sentCode {
   questionId: string;
@@ -89,22 +92,28 @@ const themeFileMap: Record<string, string> = {
 const availableThemes = Object.keys(themeFileMap);
 
 interface CodingBlockProps {
-  questionId: string;
-  setRunTestCaseResults: (results: runTestCaseType) => void;
-  setSubmitTestCaseResults: (data: submitTestCaseType) => void;
+  code: string;
+  running: boolean;
+  submitting: boolean;
+  language: string;
+  setCode: Dispatch<SetStateAction<string>>;
+  setLanguage: Dispatch<SetStateAction<string>>;
+  onRun: () => Promise<void>;
+  onSubmit: () => Promise<void>;
 }
 
-function CodingBlock({
-  questionId,
-  setRunTestCaseResults,
-  setSubmitTestCaseResults,
+function CodingEditor({
+  code,
+  setCode,
+  running,
+  submitting,
+  language,
+  setLanguage,
+  onRun,
+  onSubmit,
 }: CodingBlockProps) {
   const [editorTheme, setEditorTheme] = useState("Sunburst");
-  const [code, setCode] = useState<string>("");
-  const [language, setLanguage] = useState("cpp");
   const [editorInFocus, setEditorInFocus] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [running, setRunning] = useState(false);
   const [themeList, setThemeList] = useState<string[]>();
   const [monacoInstance, setMonacoInstance] = useState<any>(null);
   const [editorInstance, setEditorInstance] = useState<any>(null);
@@ -146,12 +155,14 @@ function CodingBlock({
 
     // Add keyboard shortcut for formatting (Shift+Alt+F)
     editor.addAction({
-      id: 'format-code',
-      label: 'Format Document',
-      keybindings: [monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
-      run: function(ed) {
-        ed.getAction('editor.action.formatDocument')?.run();
-      }
+      id: "format-code",
+      label: "Format Document",
+      keybindings: [
+        monaco.KeyMod.Shift | monaco.KeyMod.Alt | monaco.KeyCode.KeyF,
+      ],
+      run: function (ed) {
+        ed.getAction("editor.action.formatDocument")?.run();
+      },
     });
 
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -164,72 +175,11 @@ function CodingBlock({
     });
   };
 
-  const onRun = async () => {
-    setRunning(true);
-    if ((code && code?.length < 1) || code == "//Example Code") {
-      toast.error("Please Type Something");
-      setRunning(false);
-      return;
-    }
-
-    const languageId = getLanguageId(language) ?? 54;
-
-    const sentData: sentCode = {
-      questionId,
-      languageId,
-      code,
-    };
-
-    try {
-      const response = await axios.post("/api/problems/runcode", sentData);
-      setRunTestCaseResults(response.data as runTestCaseType);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRunning(false);
-    }
-  };
-
-  const onSubmit = async () => {
-    if (code.length < 1 || code == "//Example Code") {
-      toast.error("Enter Some Code to be Submitted");
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      const languageId = getLanguageId(language) ?? 54;
-
-      const submitCode: sentCode = {
-        questionId,
-        languageId,
-        code,
-      };
-
-      const submitCodeResponse = await axios.post(
-        "/api/problems/submitcode",
-        submitCode
-      );
-
-      if (submitCodeResponse.status == 401) {
-        toast.error("Please Login before you can do a Submission");
-      } else {
-        setSubmitTestCaseResults(submitCodeResponse.data as submitTestCaseType);
-      }
-    } catch (error) {
-      console.log(error);
-      // toast.error(error as string);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
-    <div>
+    <div className="flex-1">
       <div
         title="tab navbar"
-        className="w-[calc(60vw-2.5rem)] h-[calc(100vh-6.5rem)] outline-1 m-5 outline-offset-8 rounded-md py-3 px-5"
+        className="flex-1 h-[calc(100vh-6.5rem)] outline-1 m-5 outline-offset-8 rounded-md py-3 px-5"
       >
         <div
           className={`rounded-md overflow-hidden border-2 h-full flex flex-col min-h-[300px] ${
@@ -343,25 +293,29 @@ function CodingBlock({
                   </DropdownMenuSub>
                 </DropdownMenuContent>
               </DropdownMenu>
-              {(language === "javascript" || language === "typescript") && <Button
-              className="ml-2 h-[70%] animate-fade-right animate-once"
-                onClick={() => {
-                  if (editorInstance) {
-                    try {
-                      editorInstance.getAction("editor.action.formatDocument")?.run();
-                    } catch (error) {
-                      console.error("Format error:", error);
-                      toast.error("Failed to format code");
+              {(language === "javascript" || language === "typescript") && (
+                <Button
+                  className="ml-2 h-[70%] animate-fade-right animate-once"
+                  onClick={() => {
+                    if (editorInstance) {
+                      try {
+                        editorInstance
+                          .getAction("editor.action.formatDocument")
+                          ?.run();
+                      } catch (error) {
+                        console.error("Format error:", error);
+                        toast.error("Failed to format code");
+                      }
+                    } else {
+                      toast.error("Editor not ready");
                     }
-                  } else {
-                    toast.error("Editor not ready");
-                  }
-                }}
-                variant="outline"
-                title="Format Code (Shift+Alt+F)"
-              >
-                <MdFormatAlignLeft />
-              </Button>}
+                  }}
+                  variant="outline"
+                  title="Format Code (Shift+Alt+F)"
+                >
+                  <MdFormatAlignLeft />
+                </Button>
+              )}
             </div>
 
             <ButtonGroup className="h-[70%]">
@@ -390,4 +344,4 @@ function CodingBlock({
   );
 }
 
-export default CodingBlock;
+export default CodingEditor;

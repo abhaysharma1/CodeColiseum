@@ -223,6 +223,7 @@ export type UserWhereInput = {
   createdGroups?: Prisma.GroupListRelationFilter
   memberGroups?: Prisma.GroupMemberListRelationFilter
   selfSubmissions?: Prisma.SelfSubmissionListRelationFilter
+  examAttempts?: Prisma.ExamAttemptListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -244,6 +245,7 @@ export type UserOrderByWithRelationInput = {
   createdGroups?: Prisma.GroupOrderByRelationAggregateInput
   memberGroups?: Prisma.GroupMemberOrderByRelationAggregateInput
   selfSubmissions?: Prisma.selfSubmissionOrderByRelationAggregateInput
+  examAttempts?: Prisma.ExamAttemptOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -268,6 +270,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdGroups?: Prisma.GroupListRelationFilter
   memberGroups?: Prisma.GroupMemberListRelationFilter
   selfSubmissions?: Prisma.SelfSubmissionListRelationFilter
+  examAttempts?: Prisma.ExamAttemptListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -319,6 +322,7 @@ export type UserCreateInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -340,6 +344,7 @@ export type UserUncheckedCreateInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserUpdateInput = {
@@ -361,6 +366,7 @@ export type UserUpdateInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -382,6 +388,7 @@ export type UserUncheckedUpdateInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -459,6 +466,11 @@ export type UserMinOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -557,10 +569,12 @@ export type UserCreateNestedOneWithoutSubmissionsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutSubmissionsNestedInput = {
+export type UserUpdateOneWithoutSubmissionsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSubmissionsInput, Prisma.UserUncheckedCreateWithoutSubmissionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubmissionsInput
   upsert?: Prisma.UserUpsertWithoutSubmissionsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.UserUpdateWithoutSubmissionsInput>, Prisma.UserUncheckedUpdateWithoutSubmissionsInput>
 }
@@ -577,6 +591,20 @@ export type UserUpdateOneRequiredWithoutResultsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutResultsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutResultsInput, Prisma.UserUpdateWithoutResultsInput>, Prisma.UserUncheckedUpdateWithoutResultsInput>
+}
+
+export type UserCreateNestedOneWithoutExamAttemptsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExamAttemptsInput, Prisma.UserUncheckedCreateWithoutExamAttemptsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExamAttemptsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutExamAttemptsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExamAttemptsInput, Prisma.UserUncheckedCreateWithoutExamAttemptsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExamAttemptsInput
+  upsert?: Prisma.UserUpsertWithoutExamAttemptsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExamAttemptsInput, Prisma.UserUpdateWithoutExamAttemptsInput>, Prisma.UserUncheckedUpdateWithoutExamAttemptsInput>
 }
 
 export type UserCreateNestedOneWithoutCreatedGroupsInput = {
@@ -625,6 +653,7 @@ export type UserCreateWithoutSessionsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -645,6 +674,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -681,6 +711,7 @@ export type UserUpdateWithoutSessionsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -701,6 +732,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -721,6 +753,7 @@ export type UserCreateWithoutAccountsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -741,6 +774,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -777,6 +811,7 @@ export type UserUpdateWithoutAccountsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -797,6 +832,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutSelfSubmissionsInput = {
@@ -817,6 +853,7 @@ export type UserCreateWithoutSelfSubmissionsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutSelfSubmissionsInput = {
@@ -837,6 +874,7 @@ export type UserUncheckedCreateWithoutSelfSubmissionsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutSelfSubmissionsInput = {
@@ -873,6 +911,7 @@ export type UserUpdateWithoutSelfSubmissionsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSelfSubmissionsInput = {
@@ -893,6 +932,7 @@ export type UserUncheckedUpdateWithoutSelfSubmissionsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutExamsInput = {
@@ -913,6 +953,7 @@ export type UserCreateWithoutExamsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutExamsInput = {
@@ -933,6 +974,7 @@ export type UserUncheckedCreateWithoutExamsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutExamsInput = {
@@ -969,6 +1011,7 @@ export type UserUpdateWithoutExamsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutExamsInput = {
@@ -989,6 +1032,7 @@ export type UserUncheckedUpdateWithoutExamsInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -1009,6 +1053,7 @@ export type UserCreateWithoutEnrollmentsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -1029,6 +1074,7 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -1065,6 +1111,7 @@ export type UserUpdateWithoutEnrollmentsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1085,6 +1132,7 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutSubmissionsInput = {
@@ -1105,6 +1153,7 @@ export type UserCreateWithoutSubmissionsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutSubmissionsInput = {
@@ -1125,6 +1174,7 @@ export type UserUncheckedCreateWithoutSubmissionsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutSubmissionsInput = {
@@ -1161,6 +1211,7 @@ export type UserUpdateWithoutSubmissionsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubmissionsInput = {
@@ -1181,6 +1232,7 @@ export type UserUncheckedUpdateWithoutSubmissionsInput = {
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutResultsInput = {
@@ -1201,6 +1253,7 @@ export type UserCreateWithoutResultsInput = {
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutResultsInput = {
@@ -1221,6 +1274,7 @@ export type UserUncheckedCreateWithoutResultsInput = {
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutResultsInput = {
@@ -1257,6 +1311,7 @@ export type UserUpdateWithoutResultsInput = {
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResultsInput = {
@@ -1272,6 +1327,107 @@ export type UserUncheckedUpdateWithoutResultsInput = {
   exams?: Prisma.ExamUncheckedUpdateManyWithoutCreatorNestedInput
   submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
   enrollments?: Prisma.ExamEnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
+  selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
+}
+
+export type UserCreateWithoutExamAttemptsInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.UserRole | null
+  isOnboarded?: boolean
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  exams?: Prisma.ExamCreateNestedManyWithoutCreatorInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.ExamEnrollmentCreateNestedManyWithoutUserInput
+  results?: Prisma.ExamResultCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
+  selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutExamAttemptsInput = {
+  id?: string
+  name: string
+  email: string
+  role?: $Enums.UserRole | null
+  isOnboarded?: boolean
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  exams?: Prisma.ExamUncheckedCreateNestedManyWithoutCreatorInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.ExamEnrollmentUncheckedCreateNestedManyWithoutUserInput
+  results?: Prisma.ExamResultUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
+  selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutExamAttemptsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutExamAttemptsInput, Prisma.UserUncheckedCreateWithoutExamAttemptsInput>
+}
+
+export type UserUpsertWithoutExamAttemptsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutExamAttemptsInput, Prisma.UserUncheckedUpdateWithoutExamAttemptsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutExamAttemptsInput, Prisma.UserUncheckedCreateWithoutExamAttemptsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutExamAttemptsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutExamAttemptsInput, Prisma.UserUncheckedUpdateWithoutExamAttemptsInput>
+}
+
+export type UserUpdateWithoutExamAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+  isOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exams?: Prisma.ExamUpdateManyWithoutCreatorNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.ExamEnrollmentUpdateManyWithoutUserNestedInput
+  results?: Prisma.ExamResultUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
+  selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutExamAttemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.NullableEnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole | null
+  isOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  exams?: Prisma.ExamUncheckedUpdateManyWithoutCreatorNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.ExamEnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  results?: Prisma.ExamResultUncheckedUpdateManyWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1297,6 +1453,7 @@ export type UserCreateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   memberGroups?: Prisma.GroupMemberCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutCreatedGroupsInput = {
@@ -1317,6 +1474,7 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   memberGroups?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutStudentInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutCreatedGroupsInput = {
@@ -1353,6 +1511,7 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   memberGroups?: Prisma.GroupMemberUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
@@ -1373,6 +1532,7 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   memberGroups?: Prisma.GroupMemberUncheckedUpdateManyWithoutStudentNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutMemberGroupsInput = {
@@ -1393,6 +1553,7 @@ export type UserCreateWithoutMemberGroupsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
   selfSubmissions?: Prisma.selfSubmissionCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutMemberGroupsInput = {
@@ -1413,6 +1574,7 @@ export type UserUncheckedCreateWithoutMemberGroupsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedCreateNestedManyWithoutUserInput
+  examAttempts?: Prisma.ExamAttemptUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutMemberGroupsInput = {
@@ -1449,6 +1611,7 @@ export type UserUpdateWithoutMemberGroupsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
   selfSubmissions?: Prisma.selfSubmissionUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMemberGroupsInput = {
@@ -1469,6 +1632,7 @@ export type UserUncheckedUpdateWithoutMemberGroupsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
   selfSubmissions?: Prisma.selfSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  examAttempts?: Prisma.ExamAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 
@@ -1486,6 +1650,7 @@ export type UserCountOutputType = {
   createdGroups: number
   memberGroups: number
   selfSubmissions: number
+  examAttempts: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1498,6 +1663,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   createdGroups?: boolean | UserCountOutputTypeCountCreatedGroupsArgs
   memberGroups?: boolean | UserCountOutputTypeCountMemberGroupsArgs
   selfSubmissions?: boolean | UserCountOutputTypeCountSelfSubmissionsArgs
+  examAttempts?: boolean | UserCountOutputTypeCountExamAttemptsArgs
 }
 
 /**
@@ -1573,6 +1739,13 @@ export type UserCountOutputTypeCountSelfSubmissionsArgs<ExtArgs extends runtime.
   where?: Prisma.selfSubmissionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountExamAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExamAttemptWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1593,6 +1766,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
   memberGroups?: boolean | Prisma.User$memberGroupsArgs<ExtArgs>
   selfSubmissions?: boolean | Prisma.User$selfSubmissionsArgs<ExtArgs>
+  examAttempts?: boolean | Prisma.User$examAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1643,6 +1817,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
   memberGroups?: boolean | Prisma.User$memberGroupsArgs<ExtArgs>
   selfSubmissions?: boolean | Prisma.User$selfSubmissionsArgs<ExtArgs>
+  examAttempts?: boolean | Prisma.User$examAttemptsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1660,6 +1835,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdGroups: Prisma.$GroupPayload<ExtArgs>[]
     memberGroups: Prisma.$GroupMemberPayload<ExtArgs>[]
     selfSubmissions: Prisma.$selfSubmissionPayload<ExtArgs>[]
+    examAttempts: Prisma.$ExamAttemptPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2074,6 +2250,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   createdGroups<T extends Prisma.User$createdGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   memberGroups<T extends Prisma.User$memberGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$memberGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   selfSubmissions<T extends Prisma.User$selfSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$selfSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$selfSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  examAttempts<T extends Prisma.User$examAttemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$examAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExamAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2713,6 +2890,30 @@ export type User$selfSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.SelfSubmissionScalarFieldEnum | Prisma.SelfSubmissionScalarFieldEnum[]
+}
+
+/**
+ * User.examAttempts
+ */
+export type User$examAttemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExamAttempt
+   */
+  select?: Prisma.ExamAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExamAttempt
+   */
+  omit?: Prisma.ExamAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExamAttemptInclude<ExtArgs> | null
+  where?: Prisma.ExamAttemptWhereInput
+  orderBy?: Prisma.ExamAttemptOrderByWithRelationInput | Prisma.ExamAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.ExamAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExamAttemptScalarFieldEnum | Prisma.ExamAttemptScalarFieldEnum[]
 }
 
 /**

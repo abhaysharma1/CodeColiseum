@@ -38,9 +38,7 @@ function TestCases({ questionId }: { questionId: string }) {
     }
   };
 
-  useEffect(() => {
-    console.log(testData);
-  }, [testData]);
+
 
   useEffect(() => {
     if (questionId) {

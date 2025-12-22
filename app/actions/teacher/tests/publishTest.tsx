@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
 import assertExamAccess from "./assertExamAccess";
-import { error } from "console";
 
 interface inputProps {
   updatedExamDetails: exam;
@@ -42,7 +41,7 @@ export default async function publishTest({
   const { session, exam } = await assertExamAccess(updatedExamDetails.id);
 
   if (exam.isPublished) {
-    throw error("Published Exam cannot be Edited");
+    throw new Error("Published Exam cannot be Edited");
   }
 
   await prisma.$transaction(async (tx) => {
@@ -69,6 +68,15 @@ export default async function publishTest({
     });
 
     await tx.examProblem.deleteMany({ where: { examId: exam.id } });
+
+    const problems = await tx.problem.findMany({
+      where: { id: { in: selectedProblemsId } },
+      select: { id: true },
+    });
+
+    if (problems.length !== selectedProblemsId.length) {
+      throw new Error("One or more selected problems no longer exist");
+    }
 
     await tx.examProblem.createMany({
       data: selectedProblemsId.map((item, index) => ({

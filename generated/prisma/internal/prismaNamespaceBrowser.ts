@@ -65,6 +65,7 @@ export const ModelName = {
   Submission: 'Submission',
   ExamResult: 'ExamResult',
   ExamGroup: 'ExamGroup',
+  ExamAttempt: 'ExamAttempt',
   Group: 'Group',
   GroupMember: 'GroupMember',
   Tag: 'Tag',
@@ -232,11 +233,17 @@ export type ExamEnrollmentScalarFieldEnum = (typeof ExamEnrollmentScalarFieldEnu
 
 export const SubmissionScalarFieldEnum = {
   id: 'id',
-  code: 'code',
+  attemptId: 'attemptId',
+  problemId: 'problemId',
   language: 'language',
+  sourceCode: 'sourceCode',
+  status: 'status',
+  score: 'score',
+  result: 'result',
   createdAt: 'createdAt',
-  examId: 'examId',
-  userId: 'userId'
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  examId: 'examId'
 } as const
 
 export type SubmissionScalarFieldEnum = (typeof SubmissionScalarFieldEnum)[keyof typeof SubmissionScalarFieldEnum]
@@ -260,6 +267,19 @@ export const ExamGroupScalarFieldEnum = {
 } as const
 
 export type ExamGroupScalarFieldEnum = (typeof ExamGroupScalarFieldEnum)[keyof typeof ExamGroupScalarFieldEnum]
+
+
+export const ExamAttemptScalarFieldEnum = {
+  id: 'id',
+  examId: 'examId',
+  studentId: 'studentId',
+  status: 'status',
+  startedAt: 'startedAt',
+  submittedAt: 'submittedAt',
+  totalScore: 'totalScore'
+} as const
+
+export type ExamAttemptScalarFieldEnum = (typeof ExamAttemptScalarFieldEnum)[keyof typeof ExamAttemptScalarFieldEnum]
 
 
 export const GroupScalarFieldEnum = {

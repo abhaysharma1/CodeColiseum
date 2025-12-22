@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExamProblem } from "./page";
 import Link from "next/link";
@@ -51,16 +50,16 @@ function ProblemsTestTable({
   const [hasMore, setHasMore] = useState(true);
 
   const addToSelectedProblem = (problemId: string) => {
-    const alreadyExists = selectedProblemsId?.find((item) => item == problemId);
-    if (alreadyExists) {
-      setSelectedProblemsId((prev) =>
-        prev?.filter((item) => item != problemId)
-      );
-    } else {
-      setSelectedProblemsId((prev) =>
-        prev ? [...prev, problemId] : [problemId]
-      );
-    }
+    setSelectedProblemsId((prev = []) => {
+      const set = new Set(prev);
+      if (set.has(problemId)) {
+        set.delete(problemId);
+      } else {
+        set.add(problemId);
+      }
+      console.log(set);
+      return Array.from(set);
+    });
   };
 
   const fetchProblems = async (reset = false) => {
@@ -182,14 +181,14 @@ function ProblemsTestTable({
                 </TableCell>
 
                 <TableCell>
-                  <Checkbox
-                    checked={
-                      selectedProblemsId?.find((item) => item == problem.id)
-                        ? true
-                        : false
-                    }
-                    className="cursor-pointer"
-                  />
+                    <Checkbox
+                      checked={
+                        selectedProblemsId?.find((item) => item == problem.id)
+                          ? true
+                          : false
+                      }
+                      className="cursor-pointer"
+                    />
                 </TableCell>
               </TableRow>
             ))}

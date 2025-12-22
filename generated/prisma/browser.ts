@@ -88,6 +88,11 @@ export type ExamResult = Prisma.ExamResultModel
  */
 export type ExamGroup = Prisma.ExamGroupModel
 /**
+ * Model ExamAttempt
+ * 
+ */
+export type ExamAttempt = Prisma.ExamAttemptModel
+/**
  * Model Group
  * 
  */

@@ -13,7 +13,7 @@ export default async function assertExamAccess(examId: string) {
     where: { id: examId },
   });
 
-  if (!exam || exam.creatorId !== session.user.id) {
+  if (!exam || exam.creatorId != session.user.id) {
     throw new Error("Forbidden");
   }
 

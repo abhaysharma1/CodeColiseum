@@ -398,6 +398,7 @@ export const ModelName = {
   Submission: 'Submission',
   ExamResult: 'ExamResult',
   ExamGroup: 'ExamGroup',
+  ExamAttempt: 'ExamAttempt',
   Group: 'Group',
   GroupMember: 'GroupMember',
   Tag: 'Tag',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "problem" | "testCase" | "runTestCase" | "selfSubmission" | "exam" | "examProblem" | "examEnrollment" | "submission" | "examResult" | "examGroup" | "group" | "groupMember" | "tag" | "problemTag"
+    modelProps: "user" | "session" | "account" | "verification" | "problem" | "testCase" | "runTestCase" | "selfSubmission" | "exam" | "examProblem" | "examEnrollment" | "submission" | "examResult" | "examGroup" | "examAttempt" | "group" | "groupMember" | "tag" | "problemTag"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1457,6 +1458,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ExamAttempt: {
+      payload: Prisma.$ExamAttemptPayload<ExtArgs>
+      fields: Prisma.ExamAttemptFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExamAttemptFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExamAttemptFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>
+        }
+        findFirst: {
+          args: Prisma.ExamAttemptFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExamAttemptFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>
+        }
+        findMany: {
+          args: Prisma.ExamAttemptFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>[]
+        }
+        create: {
+          args: Prisma.ExamAttemptCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>
+        }
+        createMany: {
+          args: Prisma.ExamAttemptCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExamAttemptCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>[]
+        }
+        delete: {
+          args: Prisma.ExamAttemptDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>
+        }
+        update: {
+          args: Prisma.ExamAttemptUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExamAttemptDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExamAttemptUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExamAttemptUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExamAttemptUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExamAttemptPayload>
+        }
+        aggregate: {
+          args: Prisma.ExamAttemptAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExamAttempt>
+        }
+        groupBy: {
+          args: Prisma.ExamAttemptGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExamAttemptGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExamAttemptCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExamAttemptCountAggregateOutputType> | number
+        }
+      }
+    }
     Group: {
       payload: Prisma.$GroupPayload<ExtArgs>
       fields: Prisma.GroupFieldRefs
@@ -1937,11 +2012,17 @@ export type ExamEnrollmentScalarFieldEnum = (typeof ExamEnrollmentScalarFieldEnu
 
 export const SubmissionScalarFieldEnum = {
   id: 'id',
-  code: 'code',
+  attemptId: 'attemptId',
+  problemId: 'problemId',
   language: 'language',
+  sourceCode: 'sourceCode',
+  status: 'status',
+  score: 'score',
+  result: 'result',
   createdAt: 'createdAt',
-  examId: 'examId',
-  userId: 'userId'
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  examId: 'examId'
 } as const
 
 export type SubmissionScalarFieldEnum = (typeof SubmissionScalarFieldEnum)[keyof typeof SubmissionScalarFieldEnum]
@@ -1965,6 +2046,19 @@ export const ExamGroupScalarFieldEnum = {
 } as const
 
 export type ExamGroupScalarFieldEnum = (typeof ExamGroupScalarFieldEnum)[keyof typeof ExamGroupScalarFieldEnum]
+
+
+export const ExamAttemptScalarFieldEnum = {
+  id: 'id',
+  examId: 'examId',
+  studentId: 'studentId',
+  status: 'status',
+  startedAt: 'startedAt',
+  submittedAt: 'submittedAt',
+  totalScore: 'totalScore'
+} as const
+
+export type ExamAttemptScalarFieldEnum = (typeof ExamAttemptScalarFieldEnum)[keyof typeof ExamAttemptScalarFieldEnum]
 
 
 export const GroupScalarFieldEnum = {
@@ -2138,6 +2232,34 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'SubmissionStatus'
+ */
+export type EnumSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubmissionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SubmissionStatus[]'
+ */
+export type ListEnumSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubmissionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ExamAttemptStatus'
+ */
+export type EnumExamAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExamAttemptStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ExamAttemptStatus[]'
+ */
+export type ListEnumExamAttemptStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExamAttemptStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -2259,6 +2381,7 @@ export type GlobalOmitConfig = {
   submission?: Prisma.SubmissionOmit
   examResult?: Prisma.ExamResultOmit
   examGroup?: Prisma.ExamGroupOmit
+  examAttempt?: Prisma.ExamAttemptOmit
   group?: Prisma.GroupOmit
   groupMember?: Prisma.GroupMemberOmit
   tag?: Prisma.TagOmit

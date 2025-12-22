@@ -2,14 +2,13 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Markdown from "react-markdown";
-import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import TestCases from "./testCases";
 import TestCaseRunBlock from "./testCaseRunBlock";
 import SubmitCode from "./submitCode";
 import { runTestCaseType, submitTestCaseType } from "./interface";
 import { Submissions } from "./submissions";
-import remarkGfm from "remark-gfm";
 
 interface descriptionData {
   id: string;

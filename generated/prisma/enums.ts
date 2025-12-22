@@ -16,3 +16,30 @@ export const UserRole = {
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const SubmissionStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  ACCEPTED: 'ACCEPTED',
+  PARTIAL: 'PARTIAL',
+  WRONG_ANSWER: 'WRONG_ANSWER',
+  TIME_LIMIT: 'TIME_LIMIT',
+  MEMORY_LIMIT: 'MEMORY_LIMIT',
+  RUNTIME_ERROR: 'RUNTIME_ERROR',
+  COMPILE_ERROR: 'COMPILE_ERROR',
+  INTERNAL_ERROR: 'INTERNAL_ERROR'
+} as const
+
+export type SubmissionStatus = (typeof SubmissionStatus)[keyof typeof SubmissionStatus]
+
+
+export const ExamAttemptStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  SUBMITTED: 'SUBMITTED',
+  AUTO_SUBMITTED: 'AUTO_SUBMITTED',
+  TERMINATED: 'TERMINATED'
+} as const
+
+export type ExamAttemptStatus = (typeof ExamAttemptStatus)[keyof typeof ExamAttemptStatus]

@@ -20,64 +20,114 @@ export type SubmissionModel = runtime.Types.Result.DefaultSelection<Prisma.$Subm
 
 export type AggregateSubmission = {
   _count: SubmissionCountAggregateOutputType | null
+  _avg: SubmissionAvgAggregateOutputType | null
+  _sum: SubmissionSumAggregateOutputType | null
   _min: SubmissionMinAggregateOutputType | null
   _max: SubmissionMaxAggregateOutputType | null
 }
 
+export type SubmissionAvgAggregateOutputType = {
+  score: number | null
+}
+
+export type SubmissionSumAggregateOutputType = {
+  score: number | null
+}
+
 export type SubmissionMinAggregateOutputType = {
   id: string | null
-  code: string | null
+  attemptId: string | null
+  problemId: string | null
   language: string | null
+  sourceCode: string | null
+  status: $Enums.SubmissionStatus | null
+  score: number | null
   createdAt: Date | null
-  examId: string | null
+  updatedAt: Date | null
   userId: string | null
+  examId: string | null
 }
 
 export type SubmissionMaxAggregateOutputType = {
   id: string | null
-  code: string | null
+  attemptId: string | null
+  problemId: string | null
   language: string | null
+  sourceCode: string | null
+  status: $Enums.SubmissionStatus | null
+  score: number | null
   createdAt: Date | null
-  examId: string | null
+  updatedAt: Date | null
   userId: string | null
+  examId: string | null
 }
 
 export type SubmissionCountAggregateOutputType = {
   id: number
-  code: number
+  attemptId: number
+  problemId: number
   language: number
+  sourceCode: number
+  status: number
+  score: number
+  result: number
   createdAt: number
-  examId: number
+  updatedAt: number
   userId: number
+  examId: number
   _all: number
 }
 
 
+export type SubmissionAvgAggregateInputType = {
+  score?: true
+}
+
+export type SubmissionSumAggregateInputType = {
+  score?: true
+}
+
 export type SubmissionMinAggregateInputType = {
   id?: true
-  code?: true
+  attemptId?: true
+  problemId?: true
   language?: true
+  sourceCode?: true
+  status?: true
+  score?: true
   createdAt?: true
-  examId?: true
+  updatedAt?: true
   userId?: true
+  examId?: true
 }
 
 export type SubmissionMaxAggregateInputType = {
   id?: true
-  code?: true
+  attemptId?: true
+  problemId?: true
   language?: true
+  sourceCode?: true
+  status?: true
+  score?: true
   createdAt?: true
-  examId?: true
+  updatedAt?: true
   userId?: true
+  examId?: true
 }
 
 export type SubmissionCountAggregateInputType = {
   id?: true
-  code?: true
+  attemptId?: true
+  problemId?: true
   language?: true
+  sourceCode?: true
+  status?: true
+  score?: true
+  result?: true
   createdAt?: true
-  examId?: true
+  updatedAt?: true
   userId?: true
+  examId?: true
   _all?: true
 }
 
@@ -119,6 +169,18 @@ export type SubmissionAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: SubmissionAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: SubmissionSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: SubmissionMinAggregateInputType
@@ -149,18 +211,28 @@ export type SubmissionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: SubmissionCountAggregateInputType | true
+  _avg?: SubmissionAvgAggregateInputType
+  _sum?: SubmissionSumAggregateInputType
   _min?: SubmissionMinAggregateInputType
   _max?: SubmissionMaxAggregateInputType
 }
 
 export type SubmissionGroupByOutputType = {
   id: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status: $Enums.SubmissionStatus
+  score: number
+  result: runtime.JsonValue | null
   createdAt: Date
-  examId: string
-  userId: string
+  updatedAt: Date
+  userId: string | null
+  examId: string | null
   _count: SubmissionCountAggregateOutputType | null
+  _avg: SubmissionAvgAggregateOutputType | null
+  _sum: SubmissionSumAggregateOutputType | null
   _min: SubmissionMinAggregateOutputType | null
   _max: SubmissionMaxAggregateOutputType | null
 }
@@ -185,24 +257,40 @@ export type SubmissionWhereInput = {
   OR?: Prisma.SubmissionWhereInput[]
   NOT?: Prisma.SubmissionWhereInput | Prisma.SubmissionWhereInput[]
   id?: Prisma.StringFilter<"Submission"> | string
-  code?: Prisma.StringFilter<"Submission"> | string
+  attemptId?: Prisma.StringFilter<"Submission"> | string
+  problemId?: Prisma.StringFilter<"Submission"> | string
   language?: Prisma.StringFilter<"Submission"> | string
+  sourceCode?: Prisma.StringFilter<"Submission"> | string
+  status?: Prisma.EnumSubmissionStatusFilter<"Submission"> | $Enums.SubmissionStatus
+  score?: Prisma.IntFilter<"Submission"> | number
+  result?: Prisma.JsonNullableFilter<"Submission">
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
-  examId?: Prisma.StringFilter<"Submission"> | string
-  userId?: Prisma.StringFilter<"Submission"> | string
-  exam?: Prisma.XOR<Prisma.ExamScalarRelationFilter, Prisma.ExamWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  updatedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  userId?: Prisma.StringNullableFilter<"Submission"> | string | null
+  examId?: Prisma.StringNullableFilter<"Submission"> | string | null
+  attempt?: Prisma.XOR<Prisma.ExamAttemptScalarRelationFilter, Prisma.ExamAttemptWhereInput>
+  problem?: Prisma.XOR<Prisma.ProblemScalarRelationFilter, Prisma.ProblemWhereInput>
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  exam?: Prisma.XOR<Prisma.ExamNullableScalarRelationFilter, Prisma.ExamWhereInput> | null
 }
 
 export type SubmissionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  code?: Prisma.SortOrder
+  attemptId?: Prisma.SortOrder
+  problemId?: Prisma.SortOrder
   language?: Prisma.SortOrder
+  sourceCode?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  examId?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  exam?: Prisma.ExamOrderByWithRelationInput
+  updatedAt?: Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  examId?: Prisma.SortOrderInput | Prisma.SortOrder
+  attempt?: Prisma.ExamAttemptOrderByWithRelationInput
+  problem?: Prisma.ProblemOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  exam?: Prisma.ExamOrderByWithRelationInput
 }
 
 export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
@@ -210,25 +298,41 @@ export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SubmissionWhereInput | Prisma.SubmissionWhereInput[]
   OR?: Prisma.SubmissionWhereInput[]
   NOT?: Prisma.SubmissionWhereInput | Prisma.SubmissionWhereInput[]
-  code?: Prisma.StringFilter<"Submission"> | string
+  attemptId?: Prisma.StringFilter<"Submission"> | string
+  problemId?: Prisma.StringFilter<"Submission"> | string
   language?: Prisma.StringFilter<"Submission"> | string
+  sourceCode?: Prisma.StringFilter<"Submission"> | string
+  status?: Prisma.EnumSubmissionStatusFilter<"Submission"> | $Enums.SubmissionStatus
+  score?: Prisma.IntFilter<"Submission"> | number
+  result?: Prisma.JsonNullableFilter<"Submission">
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
-  examId?: Prisma.StringFilter<"Submission"> | string
-  userId?: Prisma.StringFilter<"Submission"> | string
-  exam?: Prisma.XOR<Prisma.ExamScalarRelationFilter, Prisma.ExamWhereInput>
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  updatedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  userId?: Prisma.StringNullableFilter<"Submission"> | string | null
+  examId?: Prisma.StringNullableFilter<"Submission"> | string | null
+  attempt?: Prisma.XOR<Prisma.ExamAttemptScalarRelationFilter, Prisma.ExamAttemptWhereInput>
+  problem?: Prisma.XOR<Prisma.ProblemScalarRelationFilter, Prisma.ProblemWhereInput>
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  exam?: Prisma.XOR<Prisma.ExamNullableScalarRelationFilter, Prisma.ExamWhereInput> | null
 }, "id">
 
 export type SubmissionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  code?: Prisma.SortOrder
+  attemptId?: Prisma.SortOrder
+  problemId?: Prisma.SortOrder
   language?: Prisma.SortOrder
+  sourceCode?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  examId?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  examId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.SubmissionCountOrderByAggregateInput
+  _avg?: Prisma.SubmissionAvgOrderByAggregateInput
   _max?: Prisma.SubmissionMaxOrderByAggregateInput
   _min?: Prisma.SubmissionMinOrderByAggregateInput
+  _sum?: Prisma.SubmissionSumOrderByAggregateInput
 }
 
 export type SubmissionScalarWhereWithAggregatesInput = {
@@ -236,72 +340,118 @@ export type SubmissionScalarWhereWithAggregatesInput = {
   OR?: Prisma.SubmissionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SubmissionScalarWhereWithAggregatesInput | Prisma.SubmissionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Submission"> | string
-  code?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  attemptId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  problemId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   language?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  sourceCode?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  status?: Prisma.EnumSubmissionStatusWithAggregatesFilter<"Submission"> | $Enums.SubmissionStatus
+  score?: Prisma.IntWithAggregatesFilter<"Submission"> | number
+  result?: Prisma.JsonNullableWithAggregatesFilter<"Submission">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Submission"> | Date | string
-  examId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Submission"> | Date | string
+  userId?: Prisma.StringNullableWithAggregatesFilter<"Submission"> | string | null
+  examId?: Prisma.StringNullableWithAggregatesFilter<"Submission"> | string | null
 }
 
 export type SubmissionCreateInput = {
   id?: string
-  code: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  exam: Prisma.ExamCreateNestedOneWithoutSubmissionsInput
-  user: Prisma.UserCreateNestedOneWithoutSubmissionsInput
+  updatedAt?: Date | string
+  attempt: Prisma.ExamAttemptCreateNestedOneWithoutSubmissionsInput
+  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
+  user?: Prisma.UserCreateNestedOneWithoutSubmissionsInput
+  exam?: Prisma.ExamCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateInput = {
   id?: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  examId: string
-  userId: string
+  updatedAt?: Date | string
+  userId?: string | null
+  examId?: string | null
 }
 
 export type SubmissionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  exam?: Prisma.ExamUpdateOneRequiredWithoutSubmissionsNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutSubmissionsNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attempt?: Prisma.ExamAttemptUpdateOneRequiredWithoutSubmissionsNestedInput
+  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
+  user?: Prisma.UserUpdateOneWithoutSubmissionsNestedInput
+  exam?: Prisma.ExamUpdateOneWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  examId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SubmissionCreateManyInput = {
   id?: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  examId: string
-  userId: string
+  updatedAt?: Date | string
+  userId?: string | null
+  examId?: string | null
 }
 
 export type SubmissionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SubmissionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  examId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SubmissionListRelationFilter = {
@@ -316,29 +466,53 @@ export type SubmissionOrderByRelationAggregateInput = {
 
 export type SubmissionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  code?: Prisma.SortOrder
+  attemptId?: Prisma.SortOrder
+  problemId?: Prisma.SortOrder
   language?: Prisma.SortOrder
+  sourceCode?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  result?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  examId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  examId?: Prisma.SortOrder
+}
+
+export type SubmissionAvgOrderByAggregateInput = {
+  score?: Prisma.SortOrder
 }
 
 export type SubmissionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  code?: Prisma.SortOrder
+  attemptId?: Prisma.SortOrder
+  problemId?: Prisma.SortOrder
   language?: Prisma.SortOrder
+  sourceCode?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  examId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  examId?: Prisma.SortOrder
 }
 
 export type SubmissionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  code?: Prisma.SortOrder
+  attemptId?: Prisma.SortOrder
+  problemId?: Prisma.SortOrder
   language?: Prisma.SortOrder
+  sourceCode?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  score?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  examId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  examId?: Prisma.SortOrder
+}
+
+export type SubmissionSumOrderByAggregateInput = {
+  score?: Prisma.SortOrder
 }
 
 export type SubmissionCreateNestedManyWithoutUserInput = {
@@ -380,6 +554,48 @@ export type SubmissionUncheckedUpdateManyWithoutUserNestedInput = {
   connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
   update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutUserInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutUserInput[]
   updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutUserInput | Prisma.SubmissionUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+}
+
+export type SubmissionCreateNestedManyWithoutProblemInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutProblemInput, Prisma.SubmissionUncheckedCreateWithoutProblemInput> | Prisma.SubmissionCreateWithoutProblemInput[] | Prisma.SubmissionUncheckedCreateWithoutProblemInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutProblemInput | Prisma.SubmissionCreateOrConnectWithoutProblemInput[]
+  createMany?: Prisma.SubmissionCreateManyProblemInputEnvelope
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+}
+
+export type SubmissionUncheckedCreateNestedManyWithoutProblemInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutProblemInput, Prisma.SubmissionUncheckedCreateWithoutProblemInput> | Prisma.SubmissionCreateWithoutProblemInput[] | Prisma.SubmissionUncheckedCreateWithoutProblemInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutProblemInput | Prisma.SubmissionCreateOrConnectWithoutProblemInput[]
+  createMany?: Prisma.SubmissionCreateManyProblemInputEnvelope
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+}
+
+export type SubmissionUpdateManyWithoutProblemNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutProblemInput, Prisma.SubmissionUncheckedCreateWithoutProblemInput> | Prisma.SubmissionCreateWithoutProblemInput[] | Prisma.SubmissionUncheckedCreateWithoutProblemInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutProblemInput | Prisma.SubmissionCreateOrConnectWithoutProblemInput[]
+  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutProblemInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutProblemInput[]
+  createMany?: Prisma.SubmissionCreateManyProblemInputEnvelope
+  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutProblemInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutProblemInput[]
+  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutProblemInput | Prisma.SubmissionUpdateManyWithWhereWithoutProblemInput[]
+  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+}
+
+export type SubmissionUncheckedUpdateManyWithoutProblemNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutProblemInput, Prisma.SubmissionUncheckedCreateWithoutProblemInput> | Prisma.SubmissionCreateWithoutProblemInput[] | Prisma.SubmissionUncheckedCreateWithoutProblemInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutProblemInput | Prisma.SubmissionCreateOrConnectWithoutProblemInput[]
+  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutProblemInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutProblemInput[]
+  createMany?: Prisma.SubmissionCreateManyProblemInputEnvelope
+  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutProblemInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutProblemInput[]
+  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutProblemInput | Prisma.SubmissionUpdateManyWithWhereWithoutProblemInput[]
   deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
 }
 
@@ -425,20 +641,78 @@ export type SubmissionUncheckedUpdateManyWithoutExamNestedInput = {
   deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
 }
 
+export type EnumSubmissionStatusFieldUpdateOperationsInput = {
+  set?: $Enums.SubmissionStatus
+}
+
+export type SubmissionCreateNestedManyWithoutAttemptInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutAttemptInput, Prisma.SubmissionUncheckedCreateWithoutAttemptInput> | Prisma.SubmissionCreateWithoutAttemptInput[] | Prisma.SubmissionUncheckedCreateWithoutAttemptInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutAttemptInput | Prisma.SubmissionCreateOrConnectWithoutAttemptInput[]
+  createMany?: Prisma.SubmissionCreateManyAttemptInputEnvelope
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+}
+
+export type SubmissionUncheckedCreateNestedManyWithoutAttemptInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutAttemptInput, Prisma.SubmissionUncheckedCreateWithoutAttemptInput> | Prisma.SubmissionCreateWithoutAttemptInput[] | Prisma.SubmissionUncheckedCreateWithoutAttemptInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutAttemptInput | Prisma.SubmissionCreateOrConnectWithoutAttemptInput[]
+  createMany?: Prisma.SubmissionCreateManyAttemptInputEnvelope
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+}
+
+export type SubmissionUpdateManyWithoutAttemptNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutAttemptInput, Prisma.SubmissionUncheckedCreateWithoutAttemptInput> | Prisma.SubmissionCreateWithoutAttemptInput[] | Prisma.SubmissionUncheckedCreateWithoutAttemptInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutAttemptInput | Prisma.SubmissionCreateOrConnectWithoutAttemptInput[]
+  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutAttemptInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutAttemptInput[]
+  createMany?: Prisma.SubmissionCreateManyAttemptInputEnvelope
+  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutAttemptInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutAttemptInput[]
+  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutAttemptInput | Prisma.SubmissionUpdateManyWithWhereWithoutAttemptInput[]
+  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+}
+
+export type SubmissionUncheckedUpdateManyWithoutAttemptNestedInput = {
+  create?: Prisma.XOR<Prisma.SubmissionCreateWithoutAttemptInput, Prisma.SubmissionUncheckedCreateWithoutAttemptInput> | Prisma.SubmissionCreateWithoutAttemptInput[] | Prisma.SubmissionUncheckedCreateWithoutAttemptInput[]
+  connectOrCreate?: Prisma.SubmissionCreateOrConnectWithoutAttemptInput | Prisma.SubmissionCreateOrConnectWithoutAttemptInput[]
+  upsert?: Prisma.SubmissionUpsertWithWhereUniqueWithoutAttemptInput | Prisma.SubmissionUpsertWithWhereUniqueWithoutAttemptInput[]
+  createMany?: Prisma.SubmissionCreateManyAttemptInputEnvelope
+  set?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  delete?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  connect?: Prisma.SubmissionWhereUniqueInput | Prisma.SubmissionWhereUniqueInput[]
+  update?: Prisma.SubmissionUpdateWithWhereUniqueWithoutAttemptInput | Prisma.SubmissionUpdateWithWhereUniqueWithoutAttemptInput[]
+  updateMany?: Prisma.SubmissionUpdateManyWithWhereWithoutAttemptInput | Prisma.SubmissionUpdateManyWithWhereWithoutAttemptInput[]
+  deleteMany?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
+}
+
 export type SubmissionCreateWithoutUserInput = {
   id?: string
-  code: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  exam: Prisma.ExamCreateNestedOneWithoutSubmissionsInput
+  updatedAt?: Date | string
+  attempt: Prisma.ExamAttemptCreateNestedOneWithoutSubmissionsInput
+  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
+  exam?: Prisma.ExamCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateWithoutUserInput = {
   id?: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  examId: string
+  updatedAt?: Date | string
+  examId?: string | null
 }
 
 export type SubmissionCreateOrConnectWithoutUserInput = {
@@ -472,27 +746,99 @@ export type SubmissionScalarWhereInput = {
   OR?: Prisma.SubmissionScalarWhereInput[]
   NOT?: Prisma.SubmissionScalarWhereInput | Prisma.SubmissionScalarWhereInput[]
   id?: Prisma.StringFilter<"Submission"> | string
-  code?: Prisma.StringFilter<"Submission"> | string
+  attemptId?: Prisma.StringFilter<"Submission"> | string
+  problemId?: Prisma.StringFilter<"Submission"> | string
   language?: Prisma.StringFilter<"Submission"> | string
+  sourceCode?: Prisma.StringFilter<"Submission"> | string
+  status?: Prisma.EnumSubmissionStatusFilter<"Submission"> | $Enums.SubmissionStatus
+  score?: Prisma.IntFilter<"Submission"> | number
+  result?: Prisma.JsonNullableFilter<"Submission">
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
-  examId?: Prisma.StringFilter<"Submission"> | string
-  userId?: Prisma.StringFilter<"Submission"> | string
+  updatedAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  userId?: Prisma.StringNullableFilter<"Submission"> | string | null
+  examId?: Prisma.StringNullableFilter<"Submission"> | string | null
+}
+
+export type SubmissionCreateWithoutProblemInput = {
+  id?: string
+  language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  attempt: Prisma.ExamAttemptCreateNestedOneWithoutSubmissionsInput
+  user?: Prisma.UserCreateNestedOneWithoutSubmissionsInput
+  exam?: Prisma.ExamCreateNestedOneWithoutSubmissionsInput
+}
+
+export type SubmissionUncheckedCreateWithoutProblemInput = {
+  id?: string
+  attemptId: string
+  language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId?: string | null
+  examId?: string | null
+}
+
+export type SubmissionCreateOrConnectWithoutProblemInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutProblemInput, Prisma.SubmissionUncheckedCreateWithoutProblemInput>
+}
+
+export type SubmissionCreateManyProblemInputEnvelope = {
+  data: Prisma.SubmissionCreateManyProblemInput | Prisma.SubmissionCreateManyProblemInput[]
+  skipDuplicates?: boolean
+}
+
+export type SubmissionUpsertWithWhereUniqueWithoutProblemInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutProblemInput, Prisma.SubmissionUncheckedUpdateWithoutProblemInput>
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutProblemInput, Prisma.SubmissionUncheckedCreateWithoutProblemInput>
+}
+
+export type SubmissionUpdateWithWhereUniqueWithoutProblemInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutProblemInput, Prisma.SubmissionUncheckedUpdateWithoutProblemInput>
+}
+
+export type SubmissionUpdateManyWithWhereWithoutProblemInput = {
+  where: Prisma.SubmissionScalarWhereInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutProblemInput>
 }
 
 export type SubmissionCreateWithoutExamInput = {
   id?: string
-  code: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutSubmissionsInput
+  updatedAt?: Date | string
+  attempt: Prisma.ExamAttemptCreateNestedOneWithoutSubmissionsInput
+  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
+  user?: Prisma.UserCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateWithoutExamInput = {
   id?: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  userId: string
+  updatedAt?: Date | string
+  userId?: string | null
 }
 
 export type SubmissionCreateOrConnectWithoutExamInput = {
@@ -521,141 +867,399 @@ export type SubmissionUpdateManyWithWhereWithoutExamInput = {
   data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutExamInput>
 }
 
+export type SubmissionCreateWithoutAttemptInput = {
+  id?: string
+  language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
+  user?: Prisma.UserCreateNestedOneWithoutSubmissionsInput
+  exam?: Prisma.ExamCreateNestedOneWithoutSubmissionsInput
+}
+
+export type SubmissionUncheckedCreateWithoutAttemptInput = {
+  id?: string
+  problemId: string
+  language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId?: string | null
+  examId?: string | null
+}
+
+export type SubmissionCreateOrConnectWithoutAttemptInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutAttemptInput, Prisma.SubmissionUncheckedCreateWithoutAttemptInput>
+}
+
+export type SubmissionCreateManyAttemptInputEnvelope = {
+  data: Prisma.SubmissionCreateManyAttemptInput | Prisma.SubmissionCreateManyAttemptInput[]
+  skipDuplicates?: boolean
+}
+
+export type SubmissionUpsertWithWhereUniqueWithoutAttemptInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SubmissionUpdateWithoutAttemptInput, Prisma.SubmissionUncheckedUpdateWithoutAttemptInput>
+  create: Prisma.XOR<Prisma.SubmissionCreateWithoutAttemptInput, Prisma.SubmissionUncheckedCreateWithoutAttemptInput>
+}
+
+export type SubmissionUpdateWithWhereUniqueWithoutAttemptInput = {
+  where: Prisma.SubmissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateWithoutAttemptInput, Prisma.SubmissionUncheckedUpdateWithoutAttemptInput>
+}
+
+export type SubmissionUpdateManyWithWhereWithoutAttemptInput = {
+  where: Prisma.SubmissionScalarWhereInput
+  data: Prisma.XOR<Prisma.SubmissionUpdateManyMutationInput, Prisma.SubmissionUncheckedUpdateManyWithoutAttemptInput>
+}
+
 export type SubmissionCreateManyUserInput = {
   id?: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  examId: string
+  updatedAt?: Date | string
+  examId?: string | null
 }
 
 export type SubmissionUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  exam?: Prisma.ExamUpdateOneRequiredWithoutSubmissionsNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attempt?: Prisma.ExamAttemptUpdateOneRequiredWithoutSubmissionsNestedInput
+  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
+  exam?: Prisma.ExamUpdateOneWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  examId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SubmissionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  examId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type SubmissionCreateManyProblemInput = {
+  id?: string
+  attemptId: string
+  language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId?: string | null
+  examId?: string | null
+}
+
+export type SubmissionUpdateWithoutProblemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attempt?: Prisma.ExamAttemptUpdateOneRequiredWithoutSubmissionsNestedInput
+  user?: Prisma.UserUpdateOneWithoutSubmissionsNestedInput
+  exam?: Prisma.ExamUpdateOneWithoutSubmissionsNestedInput
+}
+
+export type SubmissionUncheckedUpdateWithoutProblemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type SubmissionUncheckedUpdateManyWithoutProblemInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SubmissionCreateManyExamInput = {
   id?: string
-  code: string
+  attemptId: string
+  problemId: string
   language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  userId: string
+  updatedAt?: Date | string
+  userId?: string | null
 }
 
 export type SubmissionUpdateWithoutExamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutSubmissionsNestedInput
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attempt?: Prisma.ExamAttemptUpdateOneRequiredWithoutSubmissionsNestedInput
+  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
+  user?: Prisma.UserUpdateOneWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutExamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SubmissionUncheckedUpdateManyWithoutExamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
+  attemptId?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type SubmissionCreateManyAttemptInput = {
+  id?: string
+  problemId: string
+  language: string
+  sourceCode: string
+  status?: $Enums.SubmissionStatus
+  score?: number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId?: string | null
+  examId?: string | null
+}
+
+export type SubmissionUpdateWithoutAttemptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
+  user?: Prisma.UserUpdateOneWithoutSubmissionsNestedInput
+  exam?: Prisma.ExamUpdateOneWithoutSubmissionsNestedInput
+}
+
+export type SubmissionUncheckedUpdateWithoutAttemptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type SubmissionUncheckedUpdateManyWithoutAttemptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  problemId?: Prisma.StringFieldUpdateOperationsInput | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceCode?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSubmissionStatusFieldUpdateOperationsInput | $Enums.SubmissionStatus
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  result?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  examId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
 
 export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  code?: boolean
+  attemptId?: boolean
+  problemId?: boolean
   language?: boolean
+  sourceCode?: boolean
+  status?: boolean
+  score?: boolean
+  result?: boolean
   createdAt?: boolean
-  examId?: boolean
+  updatedAt?: boolean
   userId?: boolean
-  exam?: boolean | Prisma.ExamDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  examId?: boolean
+  attempt?: boolean | Prisma.ExamAttemptDefaultArgs<ExtArgs>
+  problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Submission$userArgs<ExtArgs>
+  exam?: boolean | Prisma.Submission$examArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  code?: boolean
+  attemptId?: boolean
+  problemId?: boolean
   language?: boolean
+  sourceCode?: boolean
+  status?: boolean
+  score?: boolean
+  result?: boolean
   createdAt?: boolean
-  examId?: boolean
+  updatedAt?: boolean
   userId?: boolean
-  exam?: boolean | Prisma.ExamDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  examId?: boolean
+  attempt?: boolean | Prisma.ExamAttemptDefaultArgs<ExtArgs>
+  problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Submission$userArgs<ExtArgs>
+  exam?: boolean | Prisma.Submission$examArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  code?: boolean
+  attemptId?: boolean
+  problemId?: boolean
   language?: boolean
+  sourceCode?: boolean
+  status?: boolean
+  score?: boolean
+  result?: boolean
   createdAt?: boolean
-  examId?: boolean
+  updatedAt?: boolean
   userId?: boolean
-  exam?: boolean | Prisma.ExamDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  examId?: boolean
+  attempt?: boolean | Prisma.ExamAttemptDefaultArgs<ExtArgs>
+  problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Submission$userArgs<ExtArgs>
+  exam?: boolean | Prisma.Submission$examArgs<ExtArgs>
 }, ExtArgs["result"]["submission"]>
 
 export type SubmissionSelectScalar = {
   id?: boolean
-  code?: boolean
+  attemptId?: boolean
+  problemId?: boolean
   language?: boolean
+  sourceCode?: boolean
+  status?: boolean
+  score?: boolean
+  result?: boolean
   createdAt?: boolean
-  examId?: boolean
+  updatedAt?: boolean
   userId?: boolean
+  examId?: boolean
 }
 
-export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "language" | "createdAt" | "examId" | "userId", ExtArgs["result"]["submission"]>
+export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "attemptId" | "problemId" | "language" | "sourceCode" | "status" | "score" | "result" | "createdAt" | "updatedAt" | "userId" | "examId", ExtArgs["result"]["submission"]>
 export type SubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  exam?: boolean | Prisma.ExamDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  attempt?: boolean | Prisma.ExamAttemptDefaultArgs<ExtArgs>
+  problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Submission$userArgs<ExtArgs>
+  exam?: boolean | Prisma.Submission$examArgs<ExtArgs>
 }
 export type SubmissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  exam?: boolean | Prisma.ExamDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  attempt?: boolean | Prisma.ExamAttemptDefaultArgs<ExtArgs>
+  problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Submission$userArgs<ExtArgs>
+  exam?: boolean | Prisma.Submission$examArgs<ExtArgs>
 }
 export type SubmissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  exam?: boolean | Prisma.ExamDefaultArgs<ExtArgs>
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  attempt?: boolean | Prisma.ExamAttemptDefaultArgs<ExtArgs>
+  problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Submission$userArgs<ExtArgs>
+  exam?: boolean | Prisma.Submission$examArgs<ExtArgs>
 }
 
 export type $SubmissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Submission"
   objects: {
-    exam: Prisma.$ExamPayload<ExtArgs>
-    user: Prisma.$UserPayload<ExtArgs>
+    attempt: Prisma.$ExamAttemptPayload<ExtArgs>
+    problem: Prisma.$ProblemPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs> | null
+    exam: Prisma.$ExamPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    code: string
+    attemptId: string
+    problemId: string
     language: string
+    sourceCode: string
+    status: $Enums.SubmissionStatus
+    score: number
+    result: runtime.JsonValue | null
     createdAt: Date
-    examId: string
-    userId: string
+    updatedAt: Date
+    userId: string | null
+    examId: string | null
   }, ExtArgs["result"]["submission"]>
   composites: {}
 }
@@ -1050,8 +1654,10 @@ readonly fields: SubmissionFieldRefs;
  */
 export interface Prisma__SubmissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  exam<T extends Prisma.ExamDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExamDefaultArgs<ExtArgs>>): Prisma.Prisma__ExamClient<runtime.Types.Result.GetResult<Prisma.$ExamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  attempt<T extends Prisma.ExamAttemptDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExamAttemptDefaultArgs<ExtArgs>>): Prisma.Prisma__ExamAttemptClient<runtime.Types.Result.GetResult<Prisma.$ExamAttemptPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  problem<T extends Prisma.ProblemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProblemDefaultArgs<ExtArgs>>): Prisma.Prisma__ProblemClient<runtime.Types.Result.GetResult<Prisma.$ProblemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.Submission$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  exam<T extends Prisma.Submission$examArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Submission$examArgs<ExtArgs>>): Prisma.Prisma__ExamClient<runtime.Types.Result.GetResult<Prisma.$ExamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1082,11 +1688,17 @@ export interface Prisma__SubmissionClient<T, Null = never, ExtArgs extends runti
  */
 export interface SubmissionFieldRefs {
   readonly id: Prisma.FieldRef<"Submission", 'String'>
-  readonly code: Prisma.FieldRef<"Submission", 'String'>
+  readonly attemptId: Prisma.FieldRef<"Submission", 'String'>
+  readonly problemId: Prisma.FieldRef<"Submission", 'String'>
   readonly language: Prisma.FieldRef<"Submission", 'String'>
+  readonly sourceCode: Prisma.FieldRef<"Submission", 'String'>
+  readonly status: Prisma.FieldRef<"Submission", 'SubmissionStatus'>
+  readonly score: Prisma.FieldRef<"Submission", 'Int'>
+  readonly result: Prisma.FieldRef<"Submission", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Submission", 'DateTime'>
-  readonly examId: Prisma.FieldRef<"Submission", 'String'>
+  readonly updatedAt: Prisma.FieldRef<"Submission", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Submission", 'String'>
+  readonly examId: Prisma.FieldRef<"Submission", 'String'>
 }
     
 
@@ -1480,6 +2092,44 @@ export type SubmissionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Submissions to delete.
    */
   limit?: number
+}
+
+/**
+ * Submission.user
+ */
+export type Submission$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Submission.exam
+ */
+export type Submission$examArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Exam
+   */
+  select?: Prisma.ExamSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Exam
+   */
+  omit?: Prisma.ExamOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExamInclude<ExtArgs> | null
+  where?: Prisma.ExamWhereInput
 }
 
 /**

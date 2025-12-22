@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import fetchAllTests from "@/app/actions/student/tests/fetchAllTests";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import Link from "next/link";
 
 // const data: Test[] = [
 //   {
@@ -178,7 +179,11 @@ export const columns: ColumnDef<newTest>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Start test</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/test/starttest/${test.id}`} replace>
+                Start test
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

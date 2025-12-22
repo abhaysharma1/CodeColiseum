@@ -14,7 +14,24 @@ export type newTest = {
 export default async function fetchAllTests() {
   const session = await isStudent();
 
-  const allTests = await prisma.exam.findMany();
+  const allTests = await prisma.exam.findMany({
+    where: {
+      examGroups: {
+        some: {
+          group: {
+            members: {
+              some: {
+                studentId: session.user.id,
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      startDate: "asc",
+    },
+  });
 
   let newTests: newTest[] = [];
 
