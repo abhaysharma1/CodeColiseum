@@ -183,7 +183,13 @@ const columns: ColumnDef<incomingData>[] = [
                 <Link href={`teacher/test/edit/${row.original.id}`}>Edit</Link>
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem>See Results</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                href={`/dashboard/teacher/test/seeresults/${row.original.id}`}
+              >
+                See Results
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
