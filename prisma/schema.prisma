@@ -147,6 +147,7 @@ model Exam {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isPublished Boolean  @default(false)
+  durationMin Int 
 
   creator      User             @relation("CreatedExams", fields: [creatorId], references: [id])
   creatorId    String
@@ -247,7 +248,8 @@ model ExamAttempt {
 
   status ExamAttemptStatus @default(NOT_STARTED)
 
-  startedAt   DateTime?
+  startedAt   DateTime
+  expiresAt DateTime
   submittedAt DateTime?
 
   totalScore Int @default(0)

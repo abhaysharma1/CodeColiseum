@@ -179,7 +179,7 @@ function CodingEditor({
     <div className="flex-1">
       <div
         title="tab navbar"
-        className="flex-1 h-[calc(100vh-6.5rem)] outline-1 m-5 outline-offset-8 rounded-md py-3 px-5"
+        className="flex-1 h-[calc(100vh-7rem)] outline-1 m-5 outline-offset-8 rounded-md py-3 px-5"
       >
         <div
           className={`rounded-md overflow-hidden border-2 h-full flex flex-col min-h-[300px] ${

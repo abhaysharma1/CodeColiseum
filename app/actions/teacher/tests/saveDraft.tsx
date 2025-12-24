@@ -1,24 +1,13 @@
-"use server"
+"use server";
 import prisma from "@/lib/prisma";
 import assertExamAccess from "./assertExamAccess";
 import { error } from "console";
+import { Exam } from "@/interfaces/DB Schema";
 
 interface inputProps {
-  updatedExamDetails: exam;
+  updatedExamDetails: Exam;
   selectedGroups: Group[];
   selectedProblemsId: string[];
-}
-
-interface exam {
-  startDate: Date;
-  endDate: Date;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  description: string | null;
-  isPublished: boolean;
-  creatorId: string;
 }
 
 interface Group {
@@ -35,14 +24,14 @@ export default async function saveDraft({
   selectedGroups,
   selectedProblemsId,
 }: {
-  updatedExamDetails: exam;
+  updatedExamDetails: Exam;
   selectedGroups: Group[];
   selectedProblemsId: string[];
 }) {
   const { session, exam } = await assertExamAccess(updatedExamDetails.id);
 
-  if(exam.isPublished){
-    throw error("Published Exam cannot be Edited")
+  if (exam.isPublished) {
+    throw error("Published Exam cannot be Edited");
   }
 
   await prisma.$transaction(async (tx) => {
@@ -56,6 +45,7 @@ export default async function saveDraft({
         isPublished: false,
         startDate: updatedExamDetails.startDate,
         endDate: updatedExamDetails.endDate,
+        durationMin: updatedExamDetails.durationMin,
       },
     });
 

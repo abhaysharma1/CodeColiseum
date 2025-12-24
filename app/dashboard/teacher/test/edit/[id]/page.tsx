@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { exam } from "@/interfaces/interface";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState, useTransition } from "react";
 import { CiEdit } from "react-icons/ci";
@@ -31,6 +30,7 @@ import ProblemsTestTable from "./problemsTestTable";
 import getSelectedProblems from "@/app/actions/teacher/tests/getSelectedProblems";
 import saveDraft from "@/app/actions/teacher/tests/saveDraft";
 import publishTest from "@/app/actions/teacher/tests/publishTest";
+import { Exam } from "@/interfaces/DB Schema";
 
 interface Group {
   id: string;
@@ -78,7 +78,7 @@ function Page() {
   const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
   const [endTime, setEndTime] = React.useState<string | undefined>(undefined);
 
-  const [examDetails, setExamDetails] = useState<exam | undefined>();
+  const [examDetails, setExamDetails] = useState<Exam | undefined>();
   const [selectedGroups, setSelectedGroups] = useState<Group[] | undefined>([]);
 
   const [selectedProblemsId, setSelectedProblemsId] = useState<
@@ -139,7 +139,6 @@ function Page() {
     };
 
     setExamDetails(updatedExamDetails);
-
 
     if (updatedExamDetails && selectedGroups && selectedProblemsId) {
       try {
@@ -202,7 +201,7 @@ function Page() {
     async function getExamDetails() {
       setLoading(true);
       const data = await fetchExam(examId);
-      setExamDetails(data as exam);
+      setExamDetails(data as Exam);
       setStartDate(data.startDate);
       const startHours = String(data.startDate.getHours()).padStart(2, "0");
       const startMinutes = String(data.startDate.getMinutes()).padStart(2, "0");
@@ -226,7 +225,6 @@ function Page() {
   }, []);
 
   useEffect(() => {
-
     async function fetchSelectedGroups() {
       if (examDetails && examDetails.id) {
         const data = await getAllSelectedGroups(examDetails.id);
@@ -371,6 +369,33 @@ function Page() {
                       className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                     />
                   </div>
+                </div>
+              </div>
+              <div className=" flex flex-col gap-3">
+                <Label>Exam Duration (minutes)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    min={1}
+                    max={10000}
+                    placeholder="Enter Duration"
+                    value={examDetails?.durationMin || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "" || /^\d+$/.test(value)) {
+                        setExamDetails((prev) =>
+                          prev
+                            ? { ...prev, durationMin: parseInt(value) || 0 }
+                            : prev
+                        );
+                      }
+                    }}
+                    onKeyPress={(e) => {
+                      if (!/\d/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  ></Input>
                 </div>
               </div>
             </div>

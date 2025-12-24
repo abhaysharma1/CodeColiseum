@@ -1,4 +1,4 @@
-import { canGiveExam, isStudent } from "@/lib/examHelpers";
+import { canGiveExam, isStudent, validateAttempt } from "@/lib/examHelpers";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,9 +7,9 @@ export async function POST(req: NextRequest) {
   const { examId } = reqBody;
 
   let session;
-  
+
   try {
-    session = isStudent();
+    session = await isStudent();
   } catch (error) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -20,6 +20,12 @@ export async function POST(req: NextRequest) {
 
   if (!examDetails) {
     return NextResponse.json({ error: "Exam Not Found" }, { status: 404 });
+  }
+
+  try {
+    validateAttempt(examDetails.id, session.session.user.id);
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 403 });
   }
 
   const examProblems = await prisma.examProblem.findMany({

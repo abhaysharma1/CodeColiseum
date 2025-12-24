@@ -1,23 +1,12 @@
 "use server";
 import prisma from "@/lib/prisma";
 import assertExamAccess from "./assertExamAccess";
+import { Exam } from "@/interfaces/DB Schema";
 
 interface inputProps {
-  updatedExamDetails: exam;
+  updatedExamDetails: Exam;
   selectedGroups: Group[];
   selectedProblemsId: string[];
-}
-
-interface exam {
-  startDate: Date;
-  endDate: Date;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  description: string | null;
-  isPublished: boolean;
-  creatorId: string;
 }
 
 interface Group {
@@ -34,7 +23,7 @@ export default async function publishTest({
   selectedGroups,
   selectedProblemsId,
 }: {
-  updatedExamDetails: exam;
+  updatedExamDetails: Exam;
   selectedGroups: Group[];
   selectedProblemsId: string[];
 }) {
@@ -55,6 +44,7 @@ export default async function publishTest({
         isPublished: true,
         startDate: updatedExamDetails.startDate,
         endDate: updatedExamDetails.endDate,
+        durationMin: updatedExamDetails.durationMin,
       },
     });
 

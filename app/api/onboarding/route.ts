@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { id, role } = body;
 
-
   const prevuser = await prisma.user.findFirst({
     where: {
       id: id,
@@ -21,8 +20,7 @@ export async function POST(request: NextRequest) {
 
   if (prevuser?.isOnboarded) {
     return new NextResponse(JSON.stringify("User is already Onboarded"), {
-      status: 300,
-      headers: { "Content-Type": "application/json" },
+      status: 200,
     });
   }
 

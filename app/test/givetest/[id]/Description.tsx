@@ -27,21 +27,25 @@ function Description({
   const [jsonCases, setJsonCases] = useState<TestCaseItem[] | undefined>();
 
   useEffect(() => {
-    const converCases = async () => {
-      if (testcases) {
-        const cases = testcases?.cases;
-        const converted = await JSON.parse(cases);
+    if (testcases) {
+      try {
+        // Check if cases is already an object or a string
+        const converted = typeof testcases.cases === 'string' 
+          ? JSON.parse(testcases.cases) 
+          : testcases.cases;
         setJsonCases(converted);
+      } catch (error) {
+        console.error("Failed to parse test cases:", error);
+        setJsonCases(undefined);
       }
-    };
-    converCases();
+    }
   }, [testcases]);
 
   return (
     <div>
       <div
         title="tab navbar"
-        className="w-[calc(35vw-2.5rem)] h-[calc(100vh-6.5rem)] overflow-y-scroll scroll-smooth m-5 outline-1 outline-offset-8 rounded-md py-3 px-7  box-border bg-accent/30"
+        className="w-[calc(35vw-2.5rem)] h-[calc(100vh-7rem)] overflow-y-scroll scroll-smooth m-5 outline-1 outline-offset-8 rounded-md py-3 px-7  box-border bg-accent/30"
       >
         <Tabs defaultValue="description" className="w-full h-full ">
           <TabsList>

@@ -34,6 +34,7 @@ export interface Exam {
   creatorId: string;
   startDate: Date;
   endDate: Date;
+  durationMin: number;
 }
 
 export interface ExamProblem {
@@ -107,7 +108,8 @@ export interface ExamAttempt {
   examId: string;
   studentId: string;
   status: ExamAttemptStatus;
-  startedAt: Date | null;
+  startedAt: Date;
+  expiresAt: Date;
   submittedAt: Date | null;
   totalScore: number;
 }

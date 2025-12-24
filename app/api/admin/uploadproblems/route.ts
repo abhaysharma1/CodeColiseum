@@ -45,7 +45,6 @@ export async function POST(req: NextRequest) {
 
     // validation using zod
     const parsed = fileSchema.safeParse(body);
-    console.log(parsed);
     if (!parsed.success) {
       return NextResponse.json({ error: "Validation Error" }, { status: 400 });
     }
@@ -64,6 +63,7 @@ export async function POST(req: NextRequest) {
     let results: RowResult[] = []; // Problems Finished
 
     for (const p of problems!) {
+      console.log("Uploading Problem ", nextNum);
       try {
         await prisma.$transaction(async (tx) => {
           const problem = await tx.problem.create({
@@ -113,6 +113,7 @@ export async function POST(req: NextRequest) {
           result: "created",
           number: nextNum,
         });
+        console.log("Uploading Problem ", nextNum - 1);
       } catch (error) {
         results.push({
           title: p.title,

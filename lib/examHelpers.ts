@@ -45,8 +45,6 @@ export async function canGiveExam(examDetails: Exam) {
 
   if (start > now) {
     throw new Error("Exam Not Started");
-  } else if (end < now) {
-    throw new Error("Exam has ended");
   }
 
   if (!examDetails.isPublished) {
@@ -67,6 +65,34 @@ export async function canGiveExam(examDetails: Exam) {
   ) {
     throw new Error("Already Attempted");
   }
-
   return session;
+}
+
+export async function validateAttempt(examId: string, studentId: string) {
+  const attempt = await prisma.examAttempt.findUnique({
+    where: { examId_studentId: { examId, studentId } },
+  });
+
+  if (!attempt) {
+    throw new Error("Attempt not found");
+  }
+
+  if (new Date() > attempt.expiresAt) {
+    if (attempt.status === "IN_PROGRESS") {
+      await prisma.examAttempt.update({
+        where: { id: attempt.id },
+        data: {
+          status: "AUTO_SUBMITTED",
+          submittedAt: new Date(),
+        },
+      });
+    }
+    throw new Error("Exam time over");
+  }
+
+  if (attempt.status !== "IN_PROGRESS") {
+    throw new Error("Exam not active");
+  }
+
+  return attempt;
 }

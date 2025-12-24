@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
   const { examId } = reqBody;
 
   let session;
+  const now = new Date();
 
   const examDetails = await prisma.exam.findUnique({
     where: { id: examId },
@@ -21,6 +22,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     return NextResponse.json({ error }, { status: 403 });
   }
+
+  const expiresAt = new Date(
+    now.getTime() + examDetails.durationMin * 60 * 1000
+  );
 
   const prevAttempt = await prisma.examAttempt.findFirst({
     where: {
@@ -39,6 +44,7 @@ export async function POST(req: NextRequest) {
       studentId: session.user.id,
       status: "IN_PROGRESS",
       startedAt: new Date(),
+      expiresAt: expiresAt,
     },
   });
 

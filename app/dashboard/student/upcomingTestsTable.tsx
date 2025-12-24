@@ -40,33 +40,6 @@ import fetchAllTests from "@/app/actions/student/tests/fetchAllTests";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import Link from "next/link";
 
-// const data: Test[] = [
-//   {
-//     id: "1",
-//     title: "Data Structures Midterm",
-//     description: "Covers arrays, linked lists, and trees",
-//     status: "upcoming",
-//     startDate: "2025-01-15",
-//     endDate: "2025-01-15",
-//   },
-//   {
-//     id: "2",
-//     title: "Algorithms Quiz",
-//     description: "Sorting and searching algorithms",
-//     status: "started",
-//     startDate: "2025-01-10",
-//     endDate: "2025-01-20",
-//   },
-//   {
-//     id: "3",
-//     title: "Web Development Final",
-//     description: "Full stack project assessment",
-//     status: "upcoming",
-//     startDate: "2025-02-01",
-//     endDate: "2025-02-01",
-//   },
-// ];
-
 export type newTest = {
   id: string;
   title: string;
@@ -172,13 +145,12 @@ export const columns: ColumnDef<newTest>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(test.id)}
-            >
-              Copy test ID
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/test/seeresults/${test.id}`} replace>
+                View Result
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href={`/test/starttest/${test.id}`} replace>
                 Start test

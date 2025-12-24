@@ -38,6 +38,10 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
+    if (session.user.id && (pathname === "/login" || pathname === "/signup")) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
     if (pathname.startsWith("/admin") && !(session.user.role === "ADMIN")) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }

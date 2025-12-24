@@ -203,6 +203,7 @@ export const ExamScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isPublished: 'isPublished',
+  durationMin: 'durationMin',
   creatorId: 'creatorId',
   startDate: 'startDate',
   endDate: 'endDate'
@@ -275,6 +276,7 @@ export const ExamAttemptScalarFieldEnum = {
   studentId: 'studentId',
   status: 'status',
   startedAt: 'startedAt',
+  expiresAt: 'expiresAt',
   submittedAt: 'submittedAt',
   totalScore: 'totalScore'
 } as const

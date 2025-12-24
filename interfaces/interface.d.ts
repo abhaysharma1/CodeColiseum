@@ -26,14 +26,3 @@ export interface UserObject {
   session: Session;
 }
 
-export type exam = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  title: string;
-  description: string | null;
-  isPublished: boolean;
-  creatorId: string;
-  startDate: Date;
-  endDate: Date;
-};

@@ -24,6 +24,7 @@ export async function draftTest() {
       creatorId: session.user.id,
       startDate: now,
       endDate: new Date(now.getTime() + 60 * 60 * 1000), // +1 hour
+      durationMin: 60,
     },
   });
 

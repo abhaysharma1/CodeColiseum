@@ -20,8 +20,18 @@ export type ExamModel = runtime.Types.Result.DefaultSelection<Prisma.$ExamPayloa
 
 export type AggregateExam = {
   _count: ExamCountAggregateOutputType | null
+  _avg: ExamAvgAggregateOutputType | null
+  _sum: ExamSumAggregateOutputType | null
   _min: ExamMinAggregateOutputType | null
   _max: ExamMaxAggregateOutputType | null
+}
+
+export type ExamAvgAggregateOutputType = {
+  durationMin: number | null
+}
+
+export type ExamSumAggregateOutputType = {
+  durationMin: number | null
 }
 
 export type ExamMinAggregateOutputType = {
@@ -31,6 +41,7 @@ export type ExamMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   isPublished: boolean | null
+  durationMin: number | null
   creatorId: string | null
   startDate: Date | null
   endDate: Date | null
@@ -43,6 +54,7 @@ export type ExamMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   isPublished: boolean | null
+  durationMin: number | null
   creatorId: string | null
   startDate: Date | null
   endDate: Date | null
@@ -55,12 +67,21 @@ export type ExamCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   isPublished: number
+  durationMin: number
   creatorId: number
   startDate: number
   endDate: number
   _all: number
 }
 
+
+export type ExamAvgAggregateInputType = {
+  durationMin?: true
+}
+
+export type ExamSumAggregateInputType = {
+  durationMin?: true
+}
 
 export type ExamMinAggregateInputType = {
   id?: true
@@ -69,6 +90,7 @@ export type ExamMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   isPublished?: true
+  durationMin?: true
   creatorId?: true
   startDate?: true
   endDate?: true
@@ -81,6 +103,7 @@ export type ExamMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   isPublished?: true
+  durationMin?: true
   creatorId?: true
   startDate?: true
   endDate?: true
@@ -93,6 +116,7 @@ export type ExamCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   isPublished?: true
+  durationMin?: true
   creatorId?: true
   startDate?: true
   endDate?: true
@@ -137,6 +161,18 @@ export type ExamAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ExamAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ExamSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ExamMinAggregateInputType
@@ -167,6 +203,8 @@ export type ExamGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: ExamCountAggregateInputType | true
+  _avg?: ExamAvgAggregateInputType
+  _sum?: ExamSumAggregateInputType
   _min?: ExamMinAggregateInputType
   _max?: ExamMaxAggregateInputType
 }
@@ -178,10 +216,13 @@ export type ExamGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   isPublished: boolean
+  durationMin: number
   creatorId: string
   startDate: Date
   endDate: Date
   _count: ExamCountAggregateOutputType | null
+  _avg: ExamAvgAggregateOutputType | null
+  _sum: ExamSumAggregateOutputType | null
   _min: ExamMinAggregateOutputType | null
   _max: ExamMaxAggregateOutputType | null
 }
@@ -211,6 +252,7 @@ export type ExamWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Exam"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Exam"> | Date | string
   isPublished?: Prisma.BoolFilter<"Exam"> | boolean
+  durationMin?: Prisma.IntFilter<"Exam"> | number
   creatorId?: Prisma.StringFilter<"Exam"> | string
   startDate?: Prisma.DateTimeFilter<"Exam"> | Date | string
   endDate?: Prisma.DateTimeFilter<"Exam"> | Date | string
@@ -230,6 +272,7 @@ export type ExamOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
+  durationMin?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -252,6 +295,7 @@ export type ExamWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Exam"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Exam"> | Date | string
   isPublished?: Prisma.BoolFilter<"Exam"> | boolean
+  durationMin?: Prisma.IntFilter<"Exam"> | number
   creatorId?: Prisma.StringFilter<"Exam"> | string
   startDate?: Prisma.DateTimeFilter<"Exam"> | Date | string
   endDate?: Prisma.DateTimeFilter<"Exam"> | Date | string
@@ -271,12 +315,15 @@ export type ExamOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
+  durationMin?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   _count?: Prisma.ExamCountOrderByAggregateInput
+  _avg?: Prisma.ExamAvgOrderByAggregateInput
   _max?: Prisma.ExamMaxOrderByAggregateInput
   _min?: Prisma.ExamMinOrderByAggregateInput
+  _sum?: Prisma.ExamSumOrderByAggregateInput
 }
 
 export type ExamScalarWhereWithAggregatesInput = {
@@ -289,6 +336,7 @@ export type ExamScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
   isPublished?: Prisma.BoolWithAggregatesFilter<"Exam"> | boolean
+  durationMin?: Prisma.IntWithAggregatesFilter<"Exam"> | number
   creatorId?: Prisma.StringWithAggregatesFilter<"Exam"> | string
   startDate?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
   endDate?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
@@ -301,6 +349,7 @@ export type ExamCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -319,6 +368,7 @@ export type ExamUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -337,6 +387,7 @@ export type ExamUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -355,6 +406,7 @@ export type ExamUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -373,6 +425,7 @@ export type ExamCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -385,6 +438,7 @@ export type ExamUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -396,6 +450,7 @@ export type ExamUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -418,9 +473,14 @@ export type ExamCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
+  durationMin?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
+}
+
+export type ExamAvgOrderByAggregateInput = {
+  durationMin?: Prisma.SortOrder
 }
 
 export type ExamMaxOrderByAggregateInput = {
@@ -430,6 +490,7 @@ export type ExamMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
+  durationMin?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -442,9 +503,14 @@ export type ExamMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
+  durationMin?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
+}
+
+export type ExamSumOrderByAggregateInput = {
+  durationMin?: Prisma.SortOrder
 }
 
 export type ExamScalarRelationFilter = {
@@ -592,6 +658,7 @@ export type ExamCreateWithoutCreatorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   problems?: Prisma.ExamProblemCreateNestedManyWithoutExamInput
@@ -609,6 +676,7 @@ export type ExamUncheckedCreateWithoutCreatorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   problems?: Prisma.ExamProblemUncheckedCreateNestedManyWithoutExamInput
@@ -655,6 +723,7 @@ export type ExamScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Exam"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Exam"> | Date | string
   isPublished?: Prisma.BoolFilter<"Exam"> | boolean
+  durationMin?: Prisma.IntFilter<"Exam"> | number
   creatorId?: Prisma.StringFilter<"Exam"> | string
   startDate?: Prisma.DateTimeFilter<"Exam"> | Date | string
   endDate?: Prisma.DateTimeFilter<"Exam"> | Date | string
@@ -667,6 +736,7 @@ export type ExamCreateWithoutProblemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -684,6 +754,7 @@ export type ExamUncheckedCreateWithoutProblemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -717,6 +788,7 @@ export type ExamUpdateWithoutProblemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -734,6 +806,7 @@ export type ExamUncheckedUpdateWithoutProblemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -751,6 +824,7 @@ export type ExamCreateWithoutEnrollmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -768,6 +842,7 @@ export type ExamUncheckedCreateWithoutEnrollmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -801,6 +876,7 @@ export type ExamUpdateWithoutEnrollmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -818,6 +894,7 @@ export type ExamUncheckedUpdateWithoutEnrollmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -835,6 +912,7 @@ export type ExamCreateWithoutSubmissionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -852,6 +930,7 @@ export type ExamUncheckedCreateWithoutSubmissionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -885,6 +964,7 @@ export type ExamUpdateWithoutSubmissionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -902,6 +982,7 @@ export type ExamUncheckedUpdateWithoutSubmissionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -919,6 +1000,7 @@ export type ExamCreateWithoutResultsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -936,6 +1018,7 @@ export type ExamUncheckedCreateWithoutResultsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -969,6 +1052,7 @@ export type ExamUpdateWithoutResultsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -986,6 +1070,7 @@ export type ExamUncheckedUpdateWithoutResultsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1003,6 +1088,7 @@ export type ExamCreateWithoutExamGroupsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -1020,6 +1106,7 @@ export type ExamUncheckedCreateWithoutExamGroupsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -1053,6 +1140,7 @@ export type ExamUpdateWithoutExamGroupsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -1070,6 +1158,7 @@ export type ExamUncheckedUpdateWithoutExamGroupsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1087,6 +1176,7 @@ export type ExamCreateWithoutExamAttemptsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
   creator: Prisma.UserCreateNestedOneWithoutExamsInput
@@ -1104,6 +1194,7 @@ export type ExamUncheckedCreateWithoutExamAttemptsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   creatorId: string
   startDate: Date | string
   endDate: Date | string
@@ -1137,6 +1228,7 @@ export type ExamUpdateWithoutExamAttemptsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutExamsNestedInput
@@ -1154,6 +1246,7 @@ export type ExamUncheckedUpdateWithoutExamAttemptsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   creatorId?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1171,6 +1264,7 @@ export type ExamCreateManyCreatorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isPublished?: boolean
+  durationMin: number
   startDate: Date | string
   endDate: Date | string
 }
@@ -1182,6 +1276,7 @@ export type ExamUpdateWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   problems?: Prisma.ExamProblemUpdateManyWithoutExamNestedInput
@@ -1199,6 +1294,7 @@ export type ExamUncheckedUpdateWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   problems?: Prisma.ExamProblemUncheckedUpdateManyWithoutExamNestedInput
@@ -1216,6 +1312,7 @@ export type ExamUncheckedUpdateManyWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMin?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1303,6 +1400,7 @@ export type ExamSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   isPublished?: boolean
+  durationMin?: boolean
   creatorId?: boolean
   startDate?: boolean
   endDate?: boolean
@@ -1323,6 +1421,7 @@ export type ExamSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   isPublished?: boolean
+  durationMin?: boolean
   creatorId?: boolean
   startDate?: boolean
   endDate?: boolean
@@ -1336,6 +1435,7 @@ export type ExamSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   isPublished?: boolean
+  durationMin?: boolean
   creatorId?: boolean
   startDate?: boolean
   endDate?: boolean
@@ -1349,12 +1449,13 @@ export type ExamSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   isPublished?: boolean
+  durationMin?: boolean
   creatorId?: boolean
   startDate?: boolean
   endDate?: boolean
 }
 
-export type ExamOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "createdAt" | "updatedAt" | "isPublished" | "creatorId" | "startDate" | "endDate", ExtArgs["result"]["exam"]>
+export type ExamOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "createdAt" | "updatedAt" | "isPublished" | "durationMin" | "creatorId" | "startDate" | "endDate", ExtArgs["result"]["exam"]>
 export type ExamInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   problems?: boolean | Prisma.Exam$problemsArgs<ExtArgs>
@@ -1390,6 +1491,7 @@ export type $ExamPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdAt: Date
     updatedAt: Date
     isPublished: boolean
+    durationMin: number
     creatorId: string
     startDate: Date
     endDate: Date
@@ -1829,6 +1931,7 @@ export interface ExamFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Exam", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Exam", 'DateTime'>
   readonly isPublished: Prisma.FieldRef<"Exam", 'Boolean'>
+  readonly durationMin: Prisma.FieldRef<"Exam", 'Int'>
   readonly creatorId: Prisma.FieldRef<"Exam", 'String'>
   readonly startDate: Prisma.FieldRef<"Exam", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"Exam", 'DateTime'>

@@ -30,6 +30,9 @@ function page() {
         setExamDetails(res.data as Exam);
         console.log(res);
       } catch (err: any) {
+        if (err.status >= 400) {
+          router.replace("/dashboard");
+        }
         handleExamError(err);
         setError(err);
       }
