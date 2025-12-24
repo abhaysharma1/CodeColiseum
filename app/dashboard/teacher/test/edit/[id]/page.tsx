@@ -8,9 +8,8 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState, useTransition } from "react";
-import { CiEdit } from "react-icons/ci";
 
-import { ChevronDownIcon } from "lucide-react";
+import { CalendarIcon, Clock, Save, Send, Trash2, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,12 +18,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import AutoCompleteSearchBar from "@/components/fuzzySearchBar";
 import fetchAllGroups from "@/app/actions/teacher/group/fetchAllGroups";
 import getAllSelectedGroups from "@/app/actions/teacher/tests/getSelectedGroups";
-import { Card, CardContent } from "@/components/ui/card";
-
-import { FaTrash } from "react-icons/fa";
 import { toast } from "sonner";
 import ProblemsTestTable from "./problemsTestTable";
 import getSelectedProblems from "@/app/actions/teacher/tests/getSelectedProblems";
@@ -246,222 +244,286 @@ function Page() {
   }, [examDetails]);
 
   return (
-    <div>
-      <div>
-        <SiteHeader name="Edit Test" />
-      </div>
+    <div className="min-h-screen bg-background">
+      <SiteHeader name="Edit Test" />
       {isLoading || loadingGroups ? (
-        <div className="w-full h-full flex justify-center items-center">
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <Spinner variant="infinite" />
         </div>
       ) : (
-        <div className="px-8 py-5 gap-5 flex flex-col overflow-y-scroll">
-          <div className="flex items-center">
-            <Input
-              value={examDetails?.title}
-              name="title"
-              onChange={changeDetails}
-              className="w-fit  transition-opacity dark:bg-background  not-focus:border-none mr-2 "
-            />
-            <CiEdit size={17} />
-          </div>
-          <div className="gap-4 flex flex-col mt-4">
-            <Label>Description</Label>
-            <Textarea
-              value={examDetails?.description || "Some Description"}
-              name="description"
-              onChange={(e) =>
-                setExamDetails((prev) =>
-                  prev ? { ...prev, description: e.target.value } : prev
-                )
-              }
-              className="w-90 transition-opacity "
-            />
-            <div className="flex gap-10">
-              <div className="flex flex-col gap-3">
-                <Label>Start Date / Time</Label>
-                <div className="flex gap-4">
-                  <div className="flex flex-col gap-3">
-                    <Popover
-                      open={startDateOpen}
-                      onOpenChange={setStartDateOpen}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          id="date-picker"
-                          className="w-32 justify-between font-normal"
-                        >
-                          {startDate
-                            ? startDate.toLocaleDateString()
-                            : "Select date"}
-                          <ChevronDownIcon />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto overflow-hidden p-0"
-                        align="start"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={startDate}
-                          captionLayout="dropdown"
-                          onSelect={(date) => {
-                            setStartDate(date);
-                            setStartDateOpen(false);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <Input
-                      type="time"
-                      id="time-picker"
-                      step="1"
-                      value={startTime ?? "10:30:00"}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Label>End Date / Time</Label>
-                <div className="flex gap-4">
-                  <div className="flex flex-col gap-3">
-                    <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          id="end-date-picker"
-                          className="w-32 justify-between font-normal"
-                        >
-                          {endDate
-                            ? endDate.toLocaleDateString()
-                            : "Select date"}
-                          <ChevronDownIcon />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto overflow-hidden p-0"
-                        align="start"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={endDate}
-                          captionLayout="dropdown"
-                          onSelect={(date) => {
-                            setEndDate(date);
-                            setEndDateOpen(false);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <Input
-                      type="time"
-                      id="end-time-picker"
-                      step="1"
-                      value={endTime ?? "10:30:00"}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className=" flex flex-col gap-3">
-                <Label>Exam Duration (minutes)</Label>
-                <div className="flex items-center gap-2">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Test Details</CardTitle>
+                <CardDescription>
+                  Configure the basic information for your test
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Test Title</Label>
                   <Input
-                    type="text"
-                    min={1}
-                    max={10000}
-                    placeholder="Enter Duration"
-                    value={examDetails?.durationMin || ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === "" || /^\d+$/.test(value)) {
-                        setExamDetails((prev) =>
-                          prev
-                            ? { ...prev, durationMin: parseInt(value) || 0 }
-                            : prev
-                        );
-                      }
-                    }}
-                    onKeyPress={(e) => {
-                      if (!/\d/.test(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                  ></Input>
-                </div>
-              </div>
-            </div>
-
-            <div className="pr-17 ">
-              <Label className="mb-4">Select Exam Problems</Label>
-              <ProblemsTestTable
-                selectedProblemsId={selectedProblemsId}
-                setSelectedProblemsId={setSelectedProblemsId}
-              />
-            </div>
-            <div className="mt-10">
-              <Label>Select Allowed Groups</Label>
-              <div className="flex gap-3 items-center">
-                {groups && (
-                  <AutoCompleteSearchBar
-                    groups={groups}
-                    setSearchedGroup={setSearchedGroup}
+                    id="title"
+                    value={examDetails?.title}
+                    name="title"
+                    onChange={changeDetails}
+                    placeholder="Enter test title"
+                    className="text-lg font-semibold"
                   />
-                )}
-                <Button variant={"secondary"} onClick={addGroupToSelected}>
-                  Select Group
-                </Button>
-              </div>
-              <div className="mt-2">
-                {selectedGroups && selectedGroups?.length > 0 && (
-                  <Card className="w-[475px] flex justify-center p-3 ">
-                    <CardContent className="flex flex-col gap-2 max-h-[300px] overflow-y-scroll">
-                      {selectedGroups?.map((group, index) => (
-                        <div key={index} className="">
-                          <div className=" bg-background/70 p-4 w-[400px] rounded-md">
-                            <div className="w-full flex justify-between">
-                              {group.name}
-                              <span className="text-foreground/70">
-                                <Button onClick={() => deleteGroup(group.id)}>
-                                  <FaTrash />
-                                </Button>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
+                </div>
 
-            <div className="w-full flex justify-end mt-4 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={examDetails?.description || ""}
+                    name="description"
+                    onChange={(e) =>
+                      setExamDetails((prev) =>
+                        prev ? { ...prev, description: e.target.value } : prev
+                      )
+                    }
+                    placeholder="Provide a description for this test"
+                    rows={4}
+                    className="resize-none"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Schedule & Duration</CardTitle>
+                <CardDescription>
+                  Set the test timing and duration
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="space-y-3">
+                    <Label>Start Date & Time</Label>
+                    <div className="flex gap-2">
+                      <Popover
+                        open={startDateOpen}
+                        onOpenChange={setStartDateOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="flex-1 justify-start font-normal"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {startDate
+                              ? startDate.toLocaleDateString()
+                              : "Pick date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={startDate}
+                            captionLayout="dropdown"
+                            onSelect={(date) => {
+                              setStartDate(date);
+                              setStartDateOpen(false);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="relative">
+                      <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="time"
+                        step="1"
+                        value={startTime ?? "10:30:00"}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label>End Date & Time</Label>
+                    <div className="flex gap-2">
+                      <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="flex-1 justify-start font-normal"
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {endDate
+                              ? endDate.toLocaleDateString()
+                              : "Pick date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={endDate}
+                            captionLayout="dropdown"
+                            onSelect={(date) => {
+                              setEndDate(date);
+                              setEndDateOpen(false);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="relative">
+                      <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="time"
+                        step="1"
+                        value={endTime ?? "10:30:00"}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="duration">Duration (minutes)</Label>
+                    <Input
+                      id="duration"
+                      type="text"
+                      placeholder="e.g. 120"
+                      value={examDetails?.durationMin || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "" || /^\d+$/.test(value)) {
+                          setExamDetails((prev) =>
+                            prev
+                              ? { ...prev, durationMin: parseInt(value) || 0 }
+                              : prev
+                          );
+                        }
+                      }}
+                      onKeyPress={(e) => {
+                        if (!/\d/.test(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Problems Selection</CardTitle>
+                <CardDescription>
+                  Choose problems for this test
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ProblemsTestTable
+                  selectedProblemsId={selectedProblemsId}
+                  setSelectedProblemsId={setSelectedProblemsId}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Allowed Groups
+                </CardTitle>
+                <CardDescription>
+                  Select which groups can access this test
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-3">
+                  {groups && (
+                    <div className="flex-1">
+                      <AutoCompleteSearchBar
+                        groups={groups}
+                        setSearchedGroup={setSearchedGroup}
+                      />
+                    </div>
+                  )}
+                  <Button variant="secondary" onClick={addGroupToSelected}>
+                    Add Group
+                  </Button>
+                </div>
+
+                {selectedGroups && selectedGroups.length > 0 && (
+                  <div className="space-y-2">
+                    <Separator />
+                    <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2">
+                      {selectedGroups.map((group) => (
+                        <Card key={group.id} className="border-muted">
+                          <CardContent className="flex items-center justify-between p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                <Users className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium">{group.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {group.noOfMembers} members
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => deleteGroup(group.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-end gap-3 pt-4">
               <Button
-                variant={"secondary"}
-                disabled={savingDraft}
-                onClick={() =>
-                  startSavingDraftTransition(() => saveDraftFunc())
-                }
+                variant="outline"
+                size="lg"
+                disabled={savingDraft || examDetails?.isPublished}
+                onClick={() => startSavingDraftTransition(() => saveDraftFunc())}
               >
-                {savingDraft ? "Saving Draft..." : "Save Draft"}
+                {savingDraft ? (
+                  <>
+                    <Spinner variant="infinite" className="mr-2 h-4 w-4" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Draft
+                  </>
+                )}
               </Button>
               <Button
-                variant={"default"}
-                disabled={publishingTest}
+                size="lg"
+                disabled={publishingTest || examDetails?.isPublished}
                 onClick={() =>
                   startPublishingTestTransition(() => publishTestFunc())
                 }
               >
-                {publishingTest ? "Publishing..." : "Publish"}
+                {publishingTest ? (
+                  <>
+                    <Spinner variant="infinite" className="mr-2 h-4 w-4" />
+                    Publishing...
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Publish Test
+                  </>
+                )}
               </Button>
             </div>
           </div>

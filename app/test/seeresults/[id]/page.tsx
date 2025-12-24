@@ -329,7 +329,7 @@ function Page() {
                 </div>
                 <div>
                   <div className="text-muted-foreground mb-1">Status</div>
-                  <Badge className={getStatusColor(examAttempt.status)}>
+                  <Badge className={"bg-green-500/10"}>
                     {examAttempt.status}
                   </Badge>
                 </div>

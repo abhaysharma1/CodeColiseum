@@ -3,23 +3,21 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { IoMdSearch } from "react-icons/io";
+import { Search, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExamProblem } from "./page";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
 
 export interface ProblemTag {
   tag: {
@@ -93,121 +91,151 @@ function ProblemsTestTable({
     return () => clearTimeout(timer);
   }, [searchValue]);
 
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case "easy":
+        return "bg-green-500/10 text-green-500 hover:bg-green-500/20";
+      case "medium":
+        return "bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20";
+      case "hard":
+        return "bg-red-500/10 text-red-500 hover:bg-red-500/20";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
+
   return (
-    <InfiniteScroll
-      dataLength={problemData.length} //This is important field to render the next data
-      next={fetchProblems}
-      hasMore={hasMore}
-      loader={<></>}
-    >
-      <div className="h-[400px]">
-        <div className="relative w-40 mb-2 m-1">
-          <IoMdSearch className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <input
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            type="text"
-            placeholder="Search"
-            className={cn(
-              "h-7 w-[13rem] rounded-md border bg-transparent pl-8 pr-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
-              "placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
-              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-            )}
-          />
-        </div>
-
-        <Table>
-          <TableCaption>
-            Hmmmmm&apos; Couldn&apos;t think of anything catchy.
-          </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">No.</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="text-left">Difficulty</TableHead>
-              <TableHead className="text-left">Tags</TableHead>
-              <TableHead className="text-left">See Problem</TableHead>
-              <TableHead className="text-left">Selected</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {problemData?.map((problem, index) => (
-              <TableRow
-                key={index}
-                className="cursor-pointer animate-fade animate-once"
-                onClick={() => addToSelectedProblem(problem.id)}
-              >
-                <TableCell className="font-medium">{problem.number}</TableCell>
-                <TableCell>{problem.title}</TableCell>
-                <TableCell className="text-left">
-                  {problem.difficulty}
-                </TableCell>
-                <TableCell className="text-left">
-                  {problem?.tags?.map((item) => (
-                    <Button
-                      key={item.tag.name}
-                      variant="ghost"
-                      className="h-5 p-2 cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSearchValue(item.tag.name);
-                        setPage(1);
-                      }}
-                    >
-                      {item.tag.name.charAt(0).toUpperCase() +
-                        item.tag.name.slice(1).toLowerCase()}
-                    </Button>
-                  ))}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant={"link"}
-                    className="h-5 p-2 "
-                    asChild
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <Link
-                      href={`/problems?id=${problem.id}`}
-                      className="h-5"
-                      target="_blank"
-                    >
-                      Open
-                      <FaExternalLinkAlt className="opacity-70 size-3" />
-                    </Link>
-                  </Button>
-                </TableCell>
-
-                <TableCell>
-                    <Checkbox
-                      checked={
-                        selectedProblemsId?.find((item) => item == problem.id)
-                          ? true
-                          : false
-                      }
-                      className="cursor-pointer"
-                    />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-
-          <TableFooter>
-            {loadingProblems && (
-              <TableRow>
-                <TableCell colSpan={5}>
-                  <div className="flex justify-center items-center h-40 w-full">
-                    <Spinner variant="infinite" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableFooter>
-        </Table>
+    <div className="space-y-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value)}
+          type="text"
+          placeholder="Search problems by title or tags..."
+          className="pl-10"
+        />
       </div>
-    </InfiniteScroll>
+
+      <div className="rounded-md border">
+        <InfiniteScroll
+          dataLength={problemData.length}
+          next={fetchProblems}
+          hasMore={hasMore}
+          loader={<></>}
+          height={450}
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-16">Select</TableHead>
+                <TableHead className="w-20">No.</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead className="w-28">Difficulty</TableHead>
+                <TableHead>Tags</TableHead>
+                <TableHead className="w-24 text-center">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {problemData.length === 0 && !loadingProblems ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center">
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <Search className="h-8 w-8 mb-2" />
+                      <p>No problems found</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                problemData.map((problem) => (
+                  <TableRow
+                    key={problem.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => addToSelectedProblem(problem.id)}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedProblemsId?.includes(problem.id)}
+                        onCheckedChange={() => addToSelectedProblem(problem.id)}
+                      />
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {problem.number}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {problem.title}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={cn(getDifficultyColor(problem.difficulty))}
+                      >
+                        {problem.difficulty}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {problem.tags?.slice(0, 3).map((item) => (
+                          <Badge
+                            key={item.tag.name}
+                            variant="outline"
+                            className="cursor-pointer text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSearchValue(item.tag.name);
+                              setPage(1);
+                            }}
+                          >
+                            {item.tag.name.charAt(0).toUpperCase() +
+                              item.tag.name.slice(1).toLowerCase()}
+                          </Badge>
+                        ))}
+                        {problem.tags && problem.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{problem.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Link
+                          href={`/problems?id=${problem.id}`}
+                          target="_blank"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+          {loadingProblems && (
+            <div className="flex justify-center items-center py-8">
+              <Spinner variant="infinite" />
+            </div>
+          )}
+        </InfiniteScroll>
+      </div>
+
+      {selectedProblemsId && selectedProblemsId.length > 0 && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Badge variant="secondary">{selectedProblemsId.length}</Badge>
+          <span>
+            {selectedProblemsId.length === 1
+              ? "problem selected"
+              : "problems selected"}
+          </span>
+        </div>
+      )}
+    </div>
   );
 }
 
