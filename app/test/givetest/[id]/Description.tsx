@@ -14,25 +14,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import axios from "axios";
+import { Badge } from "@/components/ui/badge";
+import {
+  GetSubmissionsResponse,
+  SubmissionHistoryItem,
+} from "@/app/api/tests/getsubmissions/route";
+import { toast } from "sonner";
 
 function Description({
   descriptionData,
   testcases,
   runningResults,
+  attemptId,
+  problemId,
+  submittingResults,
 }: {
   descriptionData: Problem | undefined;
   testcases: RunTestCase | undefined;
   runningResults: runTestCaseType | undefined;
+  attemptId: string | undefined;
+  problemId: string | undefined;
+  submittingResults: any;
 }) {
   const [jsonCases, setJsonCases] = useState<TestCaseItem[] | undefined>();
+  const [submissions, setSubmissions] = useState<SubmissionHistoryItem[]>([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
 
   useEffect(() => {
     if (testcases) {
       try {
         // Check if cases is already an object or a string
-        const converted = typeof testcases.cases === 'string' 
-          ? JSON.parse(testcases.cases) 
-          : testcases.cases;
+        const converted =
+          typeof testcases.cases === "string"
+            ? JSON.parse(testcases.cases)
+            : testcases.cases;
         setJsonCases(converted);
       } catch (error) {
         console.error("Failed to parse test cases:", error);
@@ -40,6 +56,63 @@ function Description({
       }
     }
   }, [testcases]);
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      if (!attemptId || !problemId) return;
+
+      try {
+        setLoadingSubmissions(true);
+        const response = await axios.post<GetSubmissionsResponse>(
+          "/api/tests/getsubmissions",
+          {
+            attemptId,
+            problemId,
+          }
+        );
+        setSubmissions(response.data.submissions);
+        console.log(response.data.submissions);
+      } catch (error) {
+        console.error("Failed to fetch submissions:", error);
+        toast.error("Failed to load submission history");
+      } finally {
+        setLoadingSubmissions(false);
+      }
+    };
+
+    fetchSubmissions();
+  }, [attemptId, problemId, submittingResults]);
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<
+      string,
+      {
+        variant: "default" | "secondary" | "destructive" | "outline";
+        color: string;
+      }
+    > = {
+      ACCEPTED: { variant: "default", color: "text-green-600" },
+      PARTIAL: { variant: "secondary", color: "text-yellow-600" },
+      WRONG_ANSWER: { variant: "destructive", color: "text-red-600" },
+      TIME_LIMIT: { variant: "destructive", color: "text-red-600" },
+      MEMORY_LIMIT: { variant: "destructive", color: "text-red-600" },
+      RUNTIME_ERROR: { variant: "destructive", color: "text-red-600" },
+      COMPILE_ERROR: { variant: "destructive", color: "text-red-600" },
+      PENDING: { variant: "outline", color: "text-gray-600" },
+      RUNNING: { variant: "outline", color: "text-blue-600" },
+      INTERNAL_ERROR: { variant: "destructive", color: "text-red-600" },
+    };
+
+    const config = statusConfig[status] || {
+      variant: "outline" as const,
+      color: "text-gray-600",
+    };
+    return (
+      <Badge variant={config.variant} className={config.color}>
+        {status.replace(/_/g, " ")}
+      </Badge>
+    );
+  };
 
   return (
     <div>
@@ -52,6 +125,7 @@ function Description({
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="testcases">Test Cases</TabsTrigger>
             <TabsTrigger value="runresults">Run Results</TabsTrigger>
+            <TabsTrigger value="submissions">Submissions</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="my-4 mx-1">
             {!descriptionData ? (
@@ -170,6 +244,160 @@ function Description({
                     </Card>
                   </div>
                 ))
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="submissions" className="my-4 mx-1">
+            <div className="space-y-4">
+              {loadingSubmissions ? (
+                <div className="w-full flex justify-center items-center py-8">
+                  <Spinner variant="ring" />
+                </div>
+              ) : submissions.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No submissions yet. Submit your code to see your submission
+                  history.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Total Submissions: {submissions.length}
+                  </div>
+                  {submissions.map((submission, index) => (
+                    <Card
+                      key={submission.id}
+                      className="animate-fade-down animate-once"
+                    >
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-base">
+                              Submission #{submissions.length - index}
+                            </CardTitle>
+                            <CardDescription>
+                              {new Date(submission.createdAt).toLocaleString()}
+                            </CardDescription>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            {getStatusBadge(submission.status)}
+                            <Badge variant="outline">
+                              Score: {submission.score}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">
+                              Language:
+                            </span>
+                            <Badge variant="secondary">
+                              {submission.language.toUpperCase()}
+                            </Badge>
+                          </div>
+
+                          {submission.result &&
+                            Array.isArray(submission.result) &&
+                            submission.result.length > 0 && (
+                              <div className="mt-3 p-3 rounded-md bg-accent/50 text-sm space-y-2">
+                                <div className="font-medium mb-2">
+                                  Execution Summary:
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-muted-foreground">
+                                  <div>
+                                    <span className="font-medium">
+                                      Test Cases:
+                                    </span>{" "}
+                                    {submission.result.length}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Passed:</span>{" "}
+                                    {
+                                      submission.result.filter(
+                                        (r: any) => r.status === "ACCEPTED"
+                                      ).length
+                                    }
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      Avg Time:
+                                    </span>{" "}
+                                    {(
+                                      submission.result.reduce(
+                                        (acc: number, r: any) =>
+                                          acc + Number(r.time || 0),
+                                        0
+                                      ) / submission.result.length
+                                    ).toFixed(3)}
+                                    s
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      Avg Memory:
+                                    </span>{" "}
+                                    {(
+                                      submission.result.reduce(
+                                        (acc: number, r: any) =>
+                                          acc + Number(r.memory || 0),
+                                        0
+                                      ) /
+                                      submission.result.length /
+                                      1024
+                                    ).toFixed(2)}{" "}
+                                    MB
+                                  </div>
+                                </div>
+
+                                {submission.result.some(
+                                  (r: any) => r.compile_output
+                                ) && (
+                                  <div className="mt-2">
+                                    <div className="font-medium text-destructive">
+                                      Compile Error:
+                                    </div>
+                                    <pre className="mt-1 p-2 bg-background rounded text-xs overflow-x-auto">
+                                      {
+                                        submission.result.find(
+                                          (r: any) => r.compile_output
+                                        )?.compile_output
+                                      }
+                                    </pre>
+                                  </div>
+                                )}
+
+                                {submission.result.some(
+                                  (r: any) => r.stderr
+                                ) && (
+                                  <div className="mt-2">
+                                    <div className="font-medium text-destructive">
+                                      Runtime Error:
+                                    </div>
+                                    <pre className="mt-1 p-2 bg-background rounded text-xs overflow-x-auto">
+                                      {
+                                        submission.result.find(
+                                          (r: any) => r.stderr
+                                        )?.stderr
+                                      }
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                          <details className="mt-3">
+                            <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+                              View Code
+                            </summary>
+                            <pre className="mt-2 p-3 bg-accent/30 rounded-md text-xs overflow-x-auto whitespace-pre-wrap">
+                              {submission.sourceCode}
+                            </pre>
+                          </details>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               )}
             </div>
           </TabsContent>

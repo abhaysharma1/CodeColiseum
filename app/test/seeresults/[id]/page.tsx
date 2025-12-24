@@ -210,7 +210,7 @@ function Page() {
                   <div className="mt-2">
                     <Badge
                       variant="outline"
-                      className="text-xs bg-green-500/10"
+                      className="text-xs bg-green-500/10 "
                     >
                       {examAttempt.status}
                     </Badge>
@@ -329,7 +329,7 @@ function Page() {
                 </div>
                 <div>
                   <div className="text-muted-foreground mb-1">Status</div>
-                  <Badge className={"bg-green-500/10"}>
+                  <Badge variant="outline" className="text-xs bg-green-500/30  ">
                     {examAttempt.status}
                   </Badge>
                 </div>

@@ -261,6 +261,9 @@ function page() {
             descriptionData={descriptionData}
             testcases={testCases}
             runningResults={runningResults}
+            attemptId={examAttempt?.id}
+            problemId={examProblems && currProblem ? examProblems[currProblem - 1]?.problemId : undefined}
+            submittingResults={submittingResults}
           />
         </div>
         <div className="flex-1">
