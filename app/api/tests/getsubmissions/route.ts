@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { isStudent } from "@/lib/examHelpers";
+import { validateAttempt } from "../../../../lib/examHelpers";
 
 export type SubmissionHistoryItem = {
   id: string;
@@ -46,6 +47,15 @@ export async function POST(request: NextRequest) {
     if (attempt.studentId !== studentId) {
       return NextResponse.json(
         { error: "Not authorized to view these submissions" },
+        { status: 403 }
+      );
+    }
+
+    try {
+      await validateAttempt(attempt.examId, session.session.user.id);
+    } catch (error) {
+      return NextResponse.json(
+        { error },
         { status: 403 }
       );
     }

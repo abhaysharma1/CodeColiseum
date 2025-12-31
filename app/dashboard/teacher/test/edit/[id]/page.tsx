@@ -244,14 +244,14 @@ function Page() {
   }, [examDetails]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="container ">
       <SiteHeader name="Edit Test" />
       {isLoading || loadingGroups ? (
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <div className="flex items-center justify-center ">
           <Spinner variant="infinite" />
         </div>
       ) : (
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="px-4 py-8 max-w-7xl overflow-y-scroll">
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -265,11 +265,10 @@ function Page() {
                   <Label htmlFor="title">Test Title</Label>
                   <Input
                     id="title"
-                    value={examDetails?.title}
+                    value={examDetails?.title || ""}
                     name="title"
                     onChange={changeDetails}
                     placeholder="Enter test title"
-                    className="text-lg font-semibold"
                   />
                 </div>
 
@@ -300,7 +299,7 @@ function Page() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
                   <div className="space-y-3">
                     <Label>Start Date & Time</Label>
                     <div className="flex gap-2">
@@ -386,27 +385,29 @@ function Page() {
 
                   <div className="space-y-3">
                     <Label htmlFor="duration">Duration (minutes)</Label>
-                    <Input
-                      id="duration"
-                      type="text"
-                      placeholder="e.g. 120"
-                      value={examDetails?.durationMin || ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === "" || /^\d+$/.test(value)) {
-                          setExamDetails((prev) =>
-                            prev
-                              ? { ...prev, durationMin: parseInt(value) || 0 }
-                              : prev
-                          );
-                        }
-                      }}
-                      onKeyPress={(e) => {
-                        if (!/\d/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
+                    <div className="pt-[44px]">
+                      <Input
+                        id="duration"
+                        type="text"
+                        placeholder="e.g. 120"
+                        value={examDetails?.durationMin || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "" || /^\d+$/.test(value)) {
+                            setExamDetails((prev) =>
+                              prev
+                                ? { ...prev, durationMin: parseInt(value) || 0 }
+                                : prev
+                            );
+                          }
+                        }}
+                        onKeyPress={(e) => {
+                          if (!/\d/.test(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -455,16 +456,16 @@ function Page() {
                 {selectedGroups && selectedGroups.length > 0 && (
                   <div className="space-y-2">
                     <Separator />
-                    <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2">
+                    <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
                       {selectedGroups.map((group) => (
                         <Card key={group.id} className="border-muted">
                           <CardContent className="flex items-center justify-between p-4">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
                                 <Users className="h-5 w-5 text-primary" />
                               </div>
-                              <div>
-                                <p className="font-medium">{group.name}</p>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium truncate">{group.name}</p>
                                 <p className="text-sm text-muted-foreground">
                                   {group.noOfMembers} members
                                 </p>
@@ -474,7 +475,7 @@ function Page() {
                               variant="ghost"
                               size="icon"
                               onClick={() => deleteGroup(group.id)}
-                              className="text-destructive hover:text-destructive"
+                              className="text-destructive hover:text-destructive flex-shrink-0 ml-2"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -487,12 +488,13 @@ function Page() {
               </CardContent>
             </Card>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
               <Button
                 variant="outline"
                 size="lg"
                 disabled={savingDraft || examDetails?.isPublished}
                 onClick={() => startSavingDraftTransition(() => saveDraftFunc())}
+                className="w-full sm:w-auto"
               >
                 {savingDraft ? (
                   <>
@@ -512,6 +514,7 @@ function Page() {
                 onClick={() =>
                   startPublishingTestTransition(() => publishTestFunc())
                 }
+                className="w-full sm:w-auto"
               >
                 {publishingTest ? (
                   <>
