@@ -56,9 +56,11 @@ export async function POST(request: NextRequest) {
       .map((email: string) => email.trim())
       .filter((email: string) => email.length > 0);
 
+    // Initialize all result arrays
     const notFoundMembers: string[] = [];
-    const notStudents: string[] = [];
-    const alreadyMembers: string[] = [];
+    const notStudents: { email: string; name: string }[] = [];
+    const alreadyMembers: { email: string; name: string }[] = [];
+    const successfullyAdded: { email: string; name: string }[] = [];
 
     // Fetch all users at once (more efficient)
     const users = await prisma.user.findMany({
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
     // Filter students and check for existing memberships
     const studentsToAdd = users.filter((user) => {
       if (user.role === "TEACHER") {
-        notStudents.push(user.email);
+        notStudents.push({ email: user.email, name: user.name });
         return false;
       }
       return true;
@@ -106,7 +108,10 @@ export async function POST(request: NextRequest) {
     );
 
     existingMembers.forEach((member) => {
-      alreadyMembers.push(member.student.email);
+      alreadyMembers.push({
+        email: member.student.email,
+        name: member.student.name,
+      });
     });
 
     // Filter out students who are already members
@@ -130,18 +135,23 @@ export async function POST(request: NextRequest) {
           },
         }),
       ]);
+
+      // Populate successfully added emails and names
+      successfullyAdded.push(
+        ...newStudents.map((user) => ({
+          email: user.email,
+          name: user.name,
+        }))
+      );
     }
 
-    console.log({ notFoundMembers, notStudents, alreadyMembers });
-
     return NextResponse.json(
-      { 
-        data: { 
-          notFoundMembers, 
-          notStudents, 
-          alreadyMembers,
-          addedCount: newStudents.length 
-        } 
+      {
+        notFoundMembers: notFoundMembers || [],
+        notStudents: notStudents || [],
+        alreadyMembers: alreadyMembers || [],
+        addedCount: newStudents.length,
+        successfullyAdded: successfullyAdded || [],
       },
       { status: 200, statusText: "Group Created Successfully" }
     );

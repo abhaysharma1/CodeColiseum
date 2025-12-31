@@ -9,10 +9,12 @@ import {
   DropzoneEmptyState,
 } from "@/components/ui/shadcn-io/dropzone";
 import { Textarea } from "@/components/ui/textarea";
-import { UploadIcon } from "lucide-react";
+import { UploadIcon, FileText, X } from "lucide-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import CreateCompletion from "./createCompletion";
 
@@ -25,9 +27,10 @@ interface newgroupdataprops {
 
 interface CreateGroupResponse {
   notFoundMembers: string[];
-  notStudents: string[];
-  alreadyMembers: string[];
+  notStudents: { email: string; name: string }[];
+  alreadyMembers: { email: string; name: string }[];
   addedCount: number;
+  successfullyAdded: { email: string; name: string }[];
 }
 interface ApiResponse {
   status: number;
@@ -36,7 +39,7 @@ interface ApiResponse {
 }
 
 function CreateGroup() {
-  const [groupCreatedBoxVisible, setGroupCreatedBoxVisible] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const [fileUploadDisabled, setFileUploadDisabled] = useState(false);
   const [textDisabled, setTextDisabled] = useState(false);
@@ -71,10 +74,19 @@ function CreateGroup() {
 
   useEffect(() => {
     if (textEmailField) {
-      const emails = textEmailField.split(",");
+      // Split by newlines or commas and clean up
+      const emails = textEmailField
+        .split(/[\n,]/)
+        .map((email) => email.trim())
+        .filter((email) => email.length > 0);
       setNewGroupData((prev) => ({ ...prev, emails: emails }));
+    } else {
+      // Clear emails when text field is cleared (unless file is uploaded)
+      if (!files) {
+        setNewGroupData((prev) => ({ ...prev, emails: [] }));
+      }
     }
-  }, [textEmailField]);
+  }, [textEmailField, files]);
 
   const checkEmpty = () => {
     if (!newGroupData.groupName) {
@@ -98,23 +110,30 @@ function CreateGroup() {
       return;
     }
     setLoading(true);
+    setDialogOpen(true);
     try {
-      const response = await axios.post(
+      const apiResponse = await axios.post(
         "/api/teacher/creategroup",
         newGroupData
       );
-      if (response.status == 200) {
-        setResponse(response as ApiResponse);
-        toast.success(response.statusText);
-        const { data } = response;
-        console.log(data);
-        return;
-      } else {
-        toast.error(response.data as string);
+        setResponse(apiResponse as ApiResponse);
+        toast.success("Group created successfully");
+        console.log("Group creation result:", apiResponse.data);
+        
+        // Reset form after successful creation
+        setNewGroupData({
+          groupName: "",
+          description: "",
+          emails: [],
+          allowJoinByLink: true,
+        });
+        setTextEmailField(undefined);
+        setFiles(undefined);
       }
-    } catch (error) {
-      console.log(error);
+    catch (error) {
+     console.log(error);
       toast.error("Failed to create group");
+      setDialogOpen(false);
     } finally {
       setLoading(false);
     }
@@ -152,130 +171,206 @@ function CreateGroup() {
   };
 
   return (
-    <div>
-      {groupCreatedBoxVisible && (
-        <div className="w-full h-full bg-background/50 z-50 absolute flex justify-center items-center">
-          <div>
-            <CreateCompletion creatingGroup={loading} data={response} />
-          </div>
-        </div>
-      )}
+    <div className="min-h-screen">
+      <CreateCompletion 
+        open={dialogOpen} 
+        onOpenChange={setDialogOpen} 
+        creatingGroup={loading} 
+        data={response} 
+      />
+      
       <div className="w-full">
         <SiteHeader name={"Create a Group"} />
       </div>
-      <form className="w-[65vw]" onSubmit={createNewGroup}>
-        <div className="p-8">
-          <Label className="text-md">Enter Group Name</Label>
-          <Input
-            className="w-70 mt-3"
-            placeholder="Enter Name"
-            onChange={handleChange}
-            name="groupName"
-          />
-          <div className="flex items-stretch justify-between w-full">
-            <div className="w-[50%]">
-              <Label className="mt-5 text-md">Enter Group Description</Label>
-              <Textarea
-                className="mt-3"
-                placeholder="Enter Description"
-                name="description"
-                onChange={handleChange}
-              />
-            </div>
-            <div className="w-[30%] mt-5">
-              <Label className="text-md">Enable Group Joining By Link/ID</Label>
-              <RadioGroup
-                defaultValue="enable"
-                className="mt-4"
-                onValueChange={(value) =>
-                  setNewGroupData((prev) => ({
-                    ...prev,
-                    allowJoinByLink: value === "enable",
-                  }))
-                }
-              >
-                <div className="flex items-center space-x-2 cursor-pointer">
-                  <RadioGroupItem
-                    value="enable"
-                    id="enable"
-                    className="cursor-pointer"
-                  />
-                  <Label htmlFor="enable" className="cursor-pointer">
-                    Enable
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2 cursor-pointer">
-                  <RadioGroupItem
-                    value="disable"
-                    id="disable"
-                    className="cursor-pointer"
-                  />
-                  <Label htmlFor="disable" className="cursor-pointer">
-                    Disable
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
+      
+      <div className="container mx-auto py-8 px-4 max-w-5xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Group Information</CardTitle>
+            <CardDescription>
+              Create a new student group and add members via email
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={createNewGroup} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="groupName">Group Name</Label>
+                <Input
+                  id="groupName"
+                  placeholder="Enter group name"
+                  onChange={handleChange}
+                  name="groupName"
+                  value={newGroupData.groupName}
+                />
+              </div>
 
-          <div>
-            <Label className="mt-4 text-md">Enter Student's Emails</Label>
-            <div className="flex gap-5 mt-3">
-              <Textarea
-                disabled={textDisabled}
-                className="min-w-[30vw]"
-                placeholder="Enter Students emails separated with a comma"
-                value={textEmailField}
-                onChange={(event) => setTextEmailField(event.target.value)}
-              />
-              {/* File Upload zone */}
-              <Dropzone
-                disabled={fileUploadDisabled}
-                className="h-[110px] w-[20rem]"
-                accept={{
-                  "text/csv": [],
-                  "application/vnd.ms-excel": [],
-                }}
-                maxFiles={1}
-                onDrop={handleDrop}
-              >
-                <DropzoneEmptyState>
-                  <div className="flex w-full items-center gap-4 p-0">
-                    <div className="flex size-16 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                      <UploadIcon size={24} />
-                    </div>
-                    <div className="text-left">
-                      {!files ? (
-                        <div>
-                          <p className="font-medium text-sm">
-                            Upload a CSV file{" "}
-                          </p>
-                          <p className="font-medium text-sm">
-                            containing students emails
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            Drag and drop or click to upload
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-muted-foreground text-xs flex justify-end w-[100%]">
-                          {files[0].name}
-                        </p>
-                      )}
-                    </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Enter group description"
+                    name="description"
+                    onChange={handleChange}
+                    value={newGroupData.description}
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Join Settings</Label>
+                  <Card className="p-4">
+                    <RadioGroup
+                      defaultValue="enable"
+                      onValueChange={(value) =>
+                        setNewGroupData((prev) => ({
+                          ...prev,
+                          allowJoinByLink: value === "enable",
+                        }))
+                      }
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="enable" id="enable" />
+                        <Label htmlFor="enable" className="font-normal cursor-pointer">
+                          Allow joining by link/ID
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="disable" id="disable" />
+                        <Label htmlFor="disable" className="font-normal cursor-pointer">
+                          Invite only
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </Card>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label>Add Student Emails</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Enter emails manually or upload a CSV file
+                  </p>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Textarea
+                      disabled={textDisabled}
+                      placeholder="Enter emails separated by commas or new lines&#10;example@email.com, another@email.com"
+                      value={textEmailField || ""}
+                      onChange={(event) => setTextEmailField(event.target.value)}
+                      rows={6}
+                    />
+                    {textEmailField && (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">
+                          {newGroupData.emails.length} emails detected
+                        </Badge>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setTextEmailField(undefined);
+                            if (!files) {
+                              setNewGroupData(prev => ({ ...prev, emails: [] }));
+                            }
+                          }}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Clear
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                </DropzoneEmptyState>
-                <DropzoneContent />
-              </Dropzone>
-            </div>
-            <div className="w-[100%] justify-end flex mt-4">
-              <Button disabled={loading} type="submit">
-                {loading ? "Please Wait" : "Create Group"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </form>
+
+                  <Dropzone
+                    disabled={fileUploadDisabled}
+                    className="h-full min-h-[150px]"
+                    accept={{
+                      "text/csv": [],
+                      "application/vnd.ms-excel": [],
+                      "text/plain": [],
+                    }}
+                    maxFiles={1}
+                    onDrop={handleDrop}
+                  >
+                    <DropzoneEmptyState>
+                      <div className="flex flex-col items-center justify-center gap-2 py-8">
+                        {!files ? (
+                          <>
+                            <div className="flex size-12 items-center justify-center rounded-lg bg-muted">
+                              <UploadIcon className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <div className="text-center">
+                              <p className="font-medium text-sm">Upload CSV file</p>
+                              <p className="text-muted-foreground text-xs mt-1">
+                                Drag and drop or click to browse
+                              </p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex size-12 items-center justify-center rounded-lg bg-muted">
+                              <FileText className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <div className="text-center">
+                              <p className="font-medium text-sm">{files[0].name}</p>
+                              <Badge variant="secondary" className="mt-2">
+                                {newGroupData.emails.length} emails found
+                              </Badge>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFiles(undefined);
+                                if (!textEmailField) {
+                                  setNewGroupData(prev => ({ ...prev, emails: [] }));
+                                }
+                              }}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Remove
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </DropzoneEmptyState>
+                    <DropzoneContent />
+                  </Dropzone>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setNewGroupData({
+                      groupName: "",
+                      description: "",
+                      emails: [],
+                      allowJoinByLink: true,
+                    });
+                    setTextEmailField(undefined);
+                    setFiles(undefined);
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button disabled={loading} type="submit">
+                  {loading ? "Creating Group..." : "Create Group"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
