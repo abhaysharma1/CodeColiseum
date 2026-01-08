@@ -41,7 +41,7 @@ function DetailsBlock({
             <TabsTrigger value="testcases">Test Cases</TabsTrigger>
             <TabsTrigger value="testcasesrun">Test Results</TabsTrigger>
             <TabsTrigger value="submitcode">Submit Code</TabsTrigger>
-            <TabsTrigger value="submitcode">Submissions</TabsTrigger>
+            <TabsTrigger value="submissions">Submissions</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="my-4 mx-1">
             {loadingDetails ? (
@@ -89,7 +89,7 @@ function DetailsBlock({
             <SubmitCode results={submitTestCaseResults} />
           </TabsContent>
           <TabsContent value="submissions">
-            <Submissions />
+            <Submissions problemId={data[0]?.id} />
           </TabsContent>
         </Tabs>
       </div>

@@ -3,16 +3,17 @@ import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { IoMdSearch } from "react-icons/io";
-import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -73,96 +74,154 @@ function ProblemsTable() {
     return () => clearTimeout(timer);
   }, [searchValue]);
 
+  const getDifficultyVariant = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case "easy":
+        return "default";
+      case "medium":
+        return "secondary";
+      case "hard":
+        return "destructive";
+      default:
+        return "outline";
+    }
+  };
+
   return (
-    <InfiniteScroll
-      dataLength={problemData.length} //This is important field to render the next data
-      next={fetchProblems}
-      hasMore={hasMore}
-      loader={<></>}
-      // endMessage={
-      //   <p style={{ textAlign: "center" }}>
-      //     <b>C'mon Man</b>
-      //   </p>
-      // }
-    >
-      <div>
-        <div className="relative w-40 mb-2 m-1">
-          <IoMdSearch className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <input
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            type="text"
-            placeholder="Search"
-            className={cn(
-              "h-7 w-[13rem] rounded-md border bg-transparent pl-8 pr-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
-              "placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground",
-              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-            )}
-          />
+    <Card>
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <CardTitle className="text-xl font-semibold">All Problems</CardTitle>
+          <div className="relative w-full sm:w-80">
+            <IoMdSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              type="text"
+              placeholder="Search problems by title or tag..."
+              className="pl-9"
+            />
+          </div>
         </div>
+      </CardHeader>
+      <CardContent>
+        <InfiniteScroll
+          dataLength={problemData.length}
+          next={fetchProblems}
+          hasMore={hasMore}
+          loader={<></>}
+        >
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[80px]">#</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="w-[120px] text-center">Difficulty</TableHead>
+                  <TableHead className="w-[300px]">Tags</TableHead>
+                </TableRow>
+              </TableHeader>
 
-        <Table>
-          <TableCaption>Hmmmmm&apos; Couldn&apos;t think of anything catchy.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">No.</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="text-center">Difficulty</TableHead>
-              <TableHead className="text-left">Tags</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {problemData?.map((problem) => (
-              <TableRow
-                key={problem.id}
-                className="cursor-pointer animate-fade animate-once"
-                onClick={() =>
-                  router.replace(`/problems?id=${problem.id}`)
-                }
-              >
-                <TableCell className="font-medium">{problem.number}</TableCell>
-                <TableCell>{problem.title}</TableCell>
-                <TableCell className="text-center">
-                  {problem.difficulty}
-                </TableCell>
-                <TableCell className="text-left">
-                  {problem?.tags?.map((item) => (
-                    <Button
-                      key={item.tag.name}
-                      variant="ghost"
-                      className="h-5 p-2 cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        setSearchValue(item.tag.name);
-                        setPage(1);
+              <TableBody>
+                {loadingProblems && problemData.length === 0 ? (
+                  Array.from({ length: 10 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Skeleton className="h-4 w-8" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-full max-w-xs" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-5 w-16 mx-auto" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Skeleton className="h-5 w-16" />
+                          <Skeleton className="h-5 w-20" />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : problemData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-40 text-center">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="text-muted-foreground">No problems found</p>
+                        <p className="text-sm text-muted-foreground">
+                          Try adjusting your search
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  problemData?.map((problem) => (
+                    <TableRow
+                      key={problem.id}
+                      className="group cursor-pointer hover:bg-muted/50 transition-all duration-200 active:bg-muted"
+                      onClick={() => router.push(`/problems?id=${problem.id}`)}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/problems?id=${problem.id}`);
+                        }
                       }}
                     >
-                      {item.tag.name.charAt(0).toUpperCase() +
-                        item.tag.name.slice(1).toLowerCase()}
-                    </Button>
-                  ))}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+                      <TableCell className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                        {problem.number}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {problem.title}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant={getDifficultyVariant(problem.difficulty)}>
+                          {problem.difficulty}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {problem?.tags?.map((item) => (
+                            <Badge
+                              key={item.tag.name}
+                              variant="outline"
+                              className="cursor-pointer hover:bg-accent transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSearchValue(item.tag.name);
+                                setPage(1);
+                              }}
+                            >
+                              {item.tag.name.charAt(0).toUpperCase() +
+                                item.tag.name.slice(1).toLowerCase()}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
 
-          <TableFooter>
-            {loadingProblems && (
-              <TableRow>
-                <TableCell colSpan={4}>
-                  <div className="flex justify-center items-center h-40 w-full">
-                    <Spinner variant="infinite" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableFooter>
-        </Table>
-      </div>
-    </InfiniteScroll>
+          {loadingProblems && problemData.length > 0 && (
+            <div className="flex justify-center items-center py-8">
+              <Spinner variant="infinite" />
+            </div>
+          )}
+
+          {!hasMore && problemData.length > 0 && (
+            <p className="text-center text-sm text-muted-foreground py-8">
+              You&apos;ve reached the end of the list
+            </p>
+          )}
+        </InfiniteScroll>
+      </CardContent>
+    </Card>
   );
 }
+
 
 export default ProblemsTable;
