@@ -39,6 +39,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { SiteHeader } from "@/components/site-header";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 function Page() {
   const params = useParams<{ id: string }>();
@@ -113,16 +115,8 @@ function Page() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar01 />
-        <div className="container mx-auto py-8 px-4">
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading results...</p>
-            </div>
-          </div>
-        </div>
+      <div className="h-full w-full flex justify-center items-center">
+        <Spinner variant="infinite" />
       </div>
     );
   }
@@ -130,7 +124,6 @@ function Page() {
   if (!result) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar01 />
         <div className="container mx-auto py-8 px-4">
           <Card className="max-w-md mx-auto mt-20">
             <CardHeader>
@@ -152,9 +145,9 @@ function Page() {
   const scorePercentage: number = (finalScore / examAttempt.totalScore) * 100;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar01 />
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="min-h-screen">
+      <SiteHeader name="See Result" />
+      <div className="container mx-auto py-4  px-4 max-w-7xl">
         {/* Hero Section - Score & Rank */}
         <div className="mb-8">
           <Card className="border-2 bg-gradient-to-br from-primary/5 to-primary/10">
@@ -329,7 +322,10 @@ function Page() {
                 </div>
                 <div>
                   <div className="text-muted-foreground mb-1">Status</div>
-                  <Badge variant="outline" className="text-xs bg-green-500/30  ">
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-green-500/30  "
+                  >
                     {examAttempt.status}
                   </Badge>
                 </div>

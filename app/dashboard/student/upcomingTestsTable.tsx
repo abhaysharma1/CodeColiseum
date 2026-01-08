@@ -147,15 +147,17 @@ export const columns: ColumnDef<newTest>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href={`/test/seeresults/${test.id}`} replace>
+              <Link href={`/dashboard/student/seeresults/${test.id}`} replace>
                 View Result
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/test/starttest/${test.id}`} replace>
-                Start test
-              </Link>
-            </DropdownMenuItem>
+            {new Date(test.endDate).getTime() > Date.now() && (
+              <DropdownMenuItem asChild>
+                <Link href={`/test/starttest/${test.id}`} replace>
+                  Start test
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
